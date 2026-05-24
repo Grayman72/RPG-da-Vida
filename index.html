@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG da Vida Real - Modo Solo v10.0</title>
+    <title>RPG da Vida Real - Modo Solo v11.3</title>
     <style>
         :root {
             --bg-color: #0d0d0f;
@@ -24,19 +24,36 @@
             background-color: var(--bg-color);
             color: var(--text);
             margin: 0;
-            padding: 15px;
+            padding: 20px 15px;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        .container { width: 100%; max-width: 950px; }
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.6rem; letter-spacing: 1px; }
+        .container { 
+            width: 100%; 
+            max-width: 1100px; 
+            margin: 0 auto;
+        }
+
+        header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+
+        h1 { 
+            color: var(--primary); 
+            margin: 0 0 5px 0; 
+            font-size: 1.8rem; 
+            letter-spacing: 1px; 
+        }
 
         .contingency-banner {
             background-color: #2c1a10;
             border: 2px dashed var(--contingency-color);
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             margin-bottom: 25px;
             display: flex;
@@ -65,18 +82,22 @@
 
         .game-layout {
             display: grid;
-            grid-template-columns: 290px 1fr;
-            gap: 20px;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+            width: 100%;
         }
 
-        @media (max-width: 768px) {
-            .game-layout { grid-template-columns: 1fr; gap: 15px; }
+        @media (max-width: 850px) {
+            .game-layout { 
+                grid-template-columns: 1fr; 
+                gap: 20px; 
+            }
             .contingency-banner { flex-direction: column; text-align: center; }
         }
 
         .sidebar-status {
             background-color: var(--card-bg);
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             height: fit-content;
@@ -84,8 +105,8 @@
             border-top: 4px solid var(--danger);
         }
 
-        .level-header { text-align: center; font-weight: bold; font-size: 1.2rem; color: #fff; }
-        .xp-text { text-align: center; font-size: 0.8rem; color: var(--text-dark); margin-bottom: 10px; }
+        .level-header { text-align: center; font-weight: bold; font-size: 1.4rem; color: #fff; }
+        .xp-text { text-align: center; font-size: 0.85rem; color: var(--text-dark); margin-bottom: 10px; }
 
         .progress-bar-container { background-color: #0d0d0f; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid #292930; }
         .progress-bar { background-color: var(--primary); height: 100%; width: 0%; transition: width 0.4s ease; }
@@ -106,24 +127,24 @@
         .curse-item { font-size: 0.8rem; color: #e1e1e6; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; margin-top: 4px; border-left: 3px solid var(--curse-color); }
 
         .gt-box { background-color: #0d0d0f; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #292930; margin-top: 15px; }
-        .gt-hours { font-size: 1.6rem; font-weight: bold; color: var(--info); margin: 3px 0; }
+        .gt-hours { font-size: 1.8rem; font-weight: bold; color: var(--info); margin: 3px 0; }
         .gt-hours.devedor { color: var(--danger); }
-        .btn-use-time { background-color: var(--danger); border: none; color: white; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; width: 100%; margin-top: 6px; }
+        .btn-use-time { background-color: var(--danger); border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; width: 100%; margin-top: 6px; }
 
         .backup-zone { margin-top: 12px; padding-top: 12px; border-top: 1px solid #292930; display: flex; gap: 8px; }
         .btn-backup { flex: 1; background-color: #121214; border: 1px solid #292930; color: var(--text-dark); padding: 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; font-weight: bold; }
 
         .main-content { display: flex; flex-direction: column; }
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { background-color: var(--card-bg); border: 1px solid #292930; color: var(--text-dark); padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+        .tab-btn { background-color: var(--card-bg); border: 1px solid #292930; color: var(--text-dark); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
         .tab-btn.active { background-color: var(--danger); color: white; border-color: var(--danger); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .section-title { font-size: 0.9rem; margin: 15px 0 8px 0; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 0.9rem; margin: 20px 0 10px 0; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
 
         .streak-panel { display: flex; gap: 8px; margin-bottom: 15px; background: #121214; padding: 10px; border-radius: 8px; border: 1px solid #292930; }
-        .streak-badge { flex: 1; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-dark); background: var(--card-bg); padding: 6px; border-radius: 5px; border-top: 2px solid #292930; }
+        .streak-badge { flex: 1; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-dark); background: var(--card-bg); padding: 8px; border-radius: 5px; border-top: 2px solid #292930; }
 
         .procrastination-panel { background: linear-gradient(135deg, #16161a 0%, #111c24 100%); border: 1px solid var(--info); padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
         .emergency-box { background: rgba(0, 0, 0, 0.4); border-radius: 6px; padding: 12px; margin: 10px 0; font-size: 1rem; font-weight: bold; color: #fff; border-left: 4px solid var(--info); display: none; }
@@ -132,54 +153,55 @@
         button.btn-main { background-color: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
         .mission-list { list-style: none; padding: 0; margin: 0; }
-        .mission-item { background-color: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; flex-direction: column; border-left: 4px solid #292930; }
-        .mission-header { display: flex; align-items: center; width: 100%; gap: 5px; }
-        .mission-text-span { font-size: 0.9rem; font-weight: 500; line-height: 1.3; flex: 1; }
+        .mission-item { background-color: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; flex-direction: column; border-left: 4px solid #292930; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .mission-header { display: flex; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; }
+        .mission-text-span { font-size: 0.95rem; font-weight: 500; line-height: 1.4; flex: 1; min-width: 200px; }
         
         .mission-item.concluida { opacity: 0.6; border-left: 4px solid var(--success); }
         .mission-item.concluida .mission-text-span { text-decoration: line-through; color: var(--text-dark); }
         .mission-item.falhada { border-left: 4px solid var(--danger); background: linear-gradient(135deg, var(--card-bg) 0%, #291818 100%); }
 
-        .badge-container { display: flex; gap: 4px; align-items: center; margin-left: auto; }
-        .xp-badge { background-color: #292930; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; color: var(--primary); font-weight: bold; }
-        .stat-badge { background-color: #0d0d0f; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; color: var(--warning); font-weight: bold; border: 1px solid #292930; }
-        .btn-fail { background-color: #0d0d0f; border: 1px solid var(--danger); color: var(--danger); padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; cursor: pointer; }
-
-        .evidence-box { margin-top: 10px; padding-top: 10px; border-top: 1px solid #292930; display: flex; flex-direction: column; gap: 6px; }
-        .input-full { width: 100%; box-sizing: border-box; }
-        .evidence-box textarea { height: 45px; resize: vertical; box-sizing: border-box; }
-        .evidence-box button { background-color: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; align-self: flex-end; font-size: 0.8rem; }
+        .badge-container { display: flex; gap: 6px; align-items: center; margin-left: auto; }
+        @media (max-width: 500px) { .badge-container { margin-left: 0; width: 100%; justify-content: flex-start; margin-top: 5px; } }
         
-        .evidence-log { font-size: 0.8rem; color: var(--success); margin-top: 5px; font-style: italic; background-color: #0e1f16; padding: 6px; border-radius: 4px; }
-        .penalty-log { font-size: 0.8rem; color: var(--danger); margin-top: 5px; font-weight: bold; background-color: #241414; padding: 6px; border-radius: 4px; }
+        .xp-badge { background-color: #292930; padding: 3px 6px; border-radius: 4px; font-size: 0.75rem; color: var(--primary); font-weight: bold; }
+        .stat-badge { background-color: #0d0d0f; padding: 3px 6px; border-radius: 4px; font-size: 0.75rem; color: var(--warning); font-weight: bold; border: 1px solid #292930; }
+        .btn-fail { background-color: #0d0d0f; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
 
-        .day-selector { display: flex; justify-content: space-between; background-color: var(--card-bg); padding: 6px; border-radius: 6px; margin-bottom: 10px; overflow-x: auto; gap: 2px; }
-        .day-btn { background: none; border: none; color: var(--text-dark); padding: 6px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.75rem; flex: 1; text-align: center; }
+        .evidence-box { margin-top: 12px; padding-top: 12px; border-top: 1px solid #292930; display: flex; flex-direction: column; gap: 8px; }
+        .input-full { width: 100%; box-sizing: border-box; }
+        .evidence-box textarea { height: 50px; resize: vertical; box-sizing: border-box; }
+        .evidence-box button { background-color: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; align-self: flex-end; font-size: 0.85rem; }
+        
+        .evidence-log { font-size: 0.85rem; color: var(--success); margin-top: 5px; font-style: italic; background-color: #0e1f16; padding: 8px; border-radius: 4px; }
+        .penalty-log { font-size: 0.85rem; color: var(--danger); margin-top: 5px; font-weight: bold; background-color: #241414; padding: 8px; border-radius: 4px; }
+
+        .day-selector { display: flex; justify-content: space-between; background-color: var(--card-bg); padding: 6px; border-radius: 6px; margin-bottom: 15px; overflow-x: auto; gap: 4px; }
+        .day-btn { background: none; border: none; color: var(--text-dark); padding: 8px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; flex: 1; text-align: center; min-width: 45px; }
         .day-btn.active { background-color: var(--danger); color: white; }
 
-        /* QUADRO DE CONQUISTAS OTIMIZADO */
-        .achievements-stats-header { background: #121214; padding: 10px; border-radius: 6px; border: 1px solid #292930; margin-bottom: 15px; font-size: 0.85rem; font-weight: bold; color: var(--warning); text-align: center; }
+        .achievements-stats-header { background: #121214; padding: 12px; border-radius: 6px; border: 1px solid #292930; margin-bottom: 15px; font-size: 0.9rem; font-weight: bold; color: var(--warning); text-align: center; }
         .achievements-grid { display: grid; grid-template-columns: 1fr; gap: 8px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
-        .achievement-card { background: var(--card-bg); padding: 10px; border-radius: 6px; border: 1px solid #292930; border-left: 4px solid #41414c; display: flex; justify-content: space-between; align-items: center; }
-        .achievement-card.unlocked { border-left-color: var(--warning); background: linear-gradient(135deg, var(--card-bg) 0%, #2e2612 100%); }
-        .achievement-info h4 { margin: 0; font-size: 0.85rem; color: #fff; }
-        .achievement-info p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-dark); }
-        .achievement-status { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 3px 6px; border-radius: 4px; background: #0d0d0f; }
+        .achievement-card { background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid #292930; border-left: 4px solid #41414c; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .achievement-card.unlocked { border-left-color: var(--warning); background: linear-gradient(135deg, var(--card-bg) 0%, #3a3014 100%); }
+        .achievement-info h4 { margin: 0; font-size: 0.9rem; color: #fff; }
+        .achievement-info p { margin: 4px 0 0 0; font-size: 0.78rem; color: var(--text-dark); }
+        .achievement-status { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; background: #0d0d0f; white-space: nowrap; }
 
-        .potion-panel { background: var(--card-bg); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #292930; margin-bottom: 15px; }
-        .timer-display { font-size: 2.5rem; font-weight: bold; color: var(--info); font-family: monospace; margin: 10px 0; }
-        .potion-count { display: inline-flex; align-items: center; gap: 5px; background: #0d0d0f; padding: 5px 12px; border-radius: 20px; color: var(--warning); font-weight: bold; font-size: 0.9rem; border: 1px solid #292930; }
+        .potion-panel { background: var(--card-bg); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #292930; margin-bottom: 15px; }
+        .timer-display { font-size: 3rem; font-weight: bold; color: var(--info); font-family: monospace; margin: 10px 0; }
+        .potion-count { display: inline-flex; align-items: center; gap: 5px; background: #0d0d0f; padding: 6px 14px; border-radius: 20px; color: var(--warning); font-weight: bold; font-size: 0.95rem; border: 1px solid #292930; }
         .dg-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .dg-card { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid #292930; border-top: 4px solid var(--danger); }
         .dg-card.boss-invasao { border-top-color: #ff3838; background: linear-gradient(135deg, #16161a 0%, #3a0d0d 100%); animation: pulse-border 2s infinite; }
         .dg-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; }
         
         .finance-panel { background-color: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; border: 1px solid #292930; }
-        .finance-row-input { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
-        .gold-display { font-size: 1.3rem; font-weight: bold; color: var(--warning); background-color: #0d0d0f; padding: 5px 12px; border-radius: 6px; border: 1px solid #292930; }
+        .finance-row-input { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .gold-display { font-size: 1.4rem; font-weight: bold; color: var(--warning); background-color: #0d0d0f; padding: 6px 14px; border-radius: 6px; border: 1px solid #292930; }
         
         .loot-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .loot-card { background-color: #121214; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning); display: flex; flex-direction: column; gap: 6px; }
+        .loot-card { background-color: #121214; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning); display: flex; flex-direction: column; gap: 8px; }
         .loot-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem; }
         .loot-progress-container { background-color: #0d0d0f; height: 8px; border-radius: 4px; overflow: hidden; }
         .loot-progress-bar { height: 100%; background-color: var(--warning); width: 0%; transition: width 0.3s; }
@@ -191,23 +213,32 @@
         .skill-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
         .skill-bar-container { background: #0d0d0f; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
         .skill-bar { background: var(--info); height: 100%; width: 0%; transition: width 0.3s; }
-        .skill-action { display: flex; gap: 5px; }
-        .skill-action input { flex: 1; font-size: 0.75rem; padding: 5px; }
-        .skill-action button { background: #292930; border: 1px solid var(--info); color: var(--info); font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .skill-action { display: flex; gap: 5px; flex-wrap: wrap; }
+        .skill-action input { flex: 1; min-width: 150px; font-size: 0.8rem; padding: 6px; }
+        .skill-action button { background: #292930; border: 1px solid var(--info); color: var(--info); font-size: 0.8rem; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         
-        .platina-form { display: flex; flex-direction: column; gap: 8px; background-color: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #292930; }
+        .platina-form { display: flex; flex-direction: column; gap: 10px; background-color: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #292930; }
         .platina-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-        .game-card { background-color: var(--card-bg); padding: 10px; border-radius: 8px; border-top: 3px solid var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
+        .game-card { background-color: var(--card-bg); padding: 12px; border-radius: 8px; border-top: 3px solid var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
         .game-card.concluido { border-top-color: var(--warning); background: linear-gradient(135deg, var(--card-bg) 0%, #3a3014 100%); }
-        .game-card h4 { margin: 0; font-size: 0.95rem; }
-        .game-card p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-dark); }
+        .game-card h4 { margin: 0; font-size: 1rem; }
+        .game-card p { margin: 2px 0 0 0; font-size: 0.8rem; color: var(--text-dark); }
         
         .diario-box { background-color: var(--card-bg); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
         .diario-box textarea { height: 90px; resize: vertical; }
         .historico-diario { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .log-entry { background-color: var(--card-bg); padding: 10px; border-radius: 8px; border-left: 3px solid var(--info); }
-        .log-date { font-size: 0.75rem; color: var(--info); font-weight: bold; margin-bottom: 3px; }
-        .log-body { font-size: 0.85rem; white-space: pre-wrap; line-height: 1.3; }
+        .log-entry { background-color: var(--card-bg); padding: 12px; border-radius: 8px; border-left: 3px solid var(--info); }
+        .log-date { font-size: 0.75rem; color: var(--info); font-weight: bold; margin-bottom: 5px; }
+        .log-body { font-size: 0.9rem; white-space: pre-wrap; line-height: 1.4; }
+
+        .guide-container { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid #292930; line-height: 1.6; }
+        .guide-section { margin-bottom: 25px; border-bottom: 1px solid #292930; padding-bottom: 15px; }
+        .guide-section:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
+        .guide-title { font-size: 1.1rem; color: var(--primary); font-weight: bold; display: flex; align-items: center; gap: 8px; margin: 0 0 10px 0; }
+        .guide-p { font-size: 0.9rem; color: var(--text); margin: 0 0 10px 0; }
+        .guide-list { padding-left: 20px; margin: 0; font-size: 0.85rem; color: var(--text-dark); }
+        .guide-list li { margin-bottom: 6px; }
+        .guide-list strong { color: var(--text); }
 
         @keyframes pulse-border {
             0% { box-shadow: 0 0 0 0 rgba(247, 90, 104, 0.4); }
@@ -220,8 +251,8 @@
 
 <div class="container">
     <header>
-        <h1>RPG Solo — Modo Hardcore v10.0</h1>
-        <p style="color: var(--danger); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; margin: 3px 0 0 0;">💀 100 Desafios de Conquistas Ativados</p>
+        <h1>RPG Solo — Modo Hardcore v11.3</h1>
+        <p style="color: var(--success); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; margin: 3px 0 0 0;">🔄 Reset Semanal Automático Ativo | 📖 Manual Incluso</p>
     </header>
 
     <div class="contingency-banner">
@@ -279,7 +310,8 @@
                 <button class="tab-btn" onclick="trocarAaba('mercenarios')" id="tab-mercenarios">🤝 Mercenários</button>
                 <button class="tab-btn" onclick="trocarAaba('skills')" id="tab-skills">📜 Grimório</button>
                 <button class="tab-btn" onclick="trocarAaba('platinas')" id="tab-platinas">🎮 Platinas</button>
-                <button class="tab-btn" onclick="trocarAaba('dicionario')" id="tab-dicionario">📖 Dicionário</button>
+                <button class="tab-btn" onclick="trocarAaba('dicionario')" id="tab-dicionario">📖 Diário</button>
+                <button class="tab-btn" onclick="trocarAaba('guia')" id="tab-guia" style="color: var(--info);">❓ Guia das Abas</button>
             </div>
 
             <div id="content-quests" class="tab-content active">
@@ -310,12 +342,12 @@
 
                 <div class="section-title" id="dg-titulo-header">👿 Dungeon Semanal / Bosses</div>
                 <div class="platina-form" style="margin-bottom: 15px;">
-                    <input type="text" id="dg-nome" placeholder="Nome do Grande Desafio Real...">
+                    <input type="text" id="dg-nome" placeholder="Nome do Grande Desafio Real (Ex: Prova de Cálculo)...">
                     <button class="btn-main" onclick="adicionarDungeon()" style="background-color: var(--danger);">Invocar Chefe</button>
                 </div>
                 <div class="dg-grid" id="grid-dungeons" style="margin-bottom: 20px;"></div>
 
-                <div class="section-title">Missões Ativas (<span id="nome-dia-atual">Sábado</span>)</div>
+                <div class="section-title">Missões Ativas (<span id="nome-dia-atual">Segunda</span>)</div>
                 <ul class="mission-list" id="lista-missoes"></ul>
             </div>
 
@@ -409,16 +441,63 @@
                 <div class="historico-diario" id="historico-diario"></div>
             </div>
 
+            <div id="content-guia" class="tab-content">
+                <div class="guide-container">
+                    <h2 style="color: #fff; margin-top: 0; font-size: 1.3rem; border-bottom: 2px solid var(--primary); padding-bottom: 5px;">📖 Manual Operacional do Grimório</h2>
+                    <p class="guide-p">Bem-vindo ao centro de informações. Aqui está a descrição e a utilidade exata de cada aba do seu painel de jogo para ajudá-lo a gerenciar a sua jornada:</p>
+                    
+                    <div class="guide-section">
+                        <div class="guide-title">⚔️ Quests</div>
+                        <p class="guide-p">O coração do seu dia a dia. Aqui você valida suas obrigações diárias enviando provas textuais reais para ganhar XP, atributos e <strong>Game Time</strong>. Se falhar, você é punido. Também abriga o <strong>Comando Relâmpago</strong> (para quebrar a inércia em 15 minutos) e o painel de <strong>Bosses/Dungeons</strong> (grandes pendências da vida real que bloqueiam sua diversão até serem resolvidas).</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">🧪 Foco</div>
+                        <p class="guide-p">Um laboratório Pomodoro de 25 minutos. Ao manter o foco total até o timer zerar, você destila uma <strong>Poção de Concentração</strong>. Essa poção pode ser guardada no inventário e bebida quando você quiser para injetar instantaneamente <strong>+1 Hora de Game Time legítima</strong> no seu painel.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">🏆 Conquistas</div>
+                        <p class="guide-p">O painel com os <strong>100 desafios automáticos</strong>. Ele monitora constantemente o seu progresso total em segundo plano. À medida que você sobe de nível, acumula horas de jogo, junta dinheiro ou acumula dias seguidos sem falhar (streaks), os troféus de Bronze, Prata, Ouro, Platina e Diamante se destrancam sozinhos.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">💰 Tesouraria</div>
+                        <p class="guide-p">Onde a sua vida financeira se choca com o game. Você registra o saldo real da sua conta bancária e cadastra <strong>Loots</strong> (coisas caras que você quer comprar, como uma placa de vídeo ou tênis). O jogo calcula o progresso e só libera a compra quando você tiver dinheiro físico. Comprar um item por aqui valida o uso do dinheiro e te recompensa com bônus massivos de XP e atributos.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">🤝 Mercenários</div>
+                        <p class="guide-p">Contratos de prestação de contas com terceiros. Se você tem dificuldade de cumprir algo sozinho, você assina um contrato colocando um amigo, namorada ou familiar como <strong>Fiscal</strong>. Você define a missão e a <strong>multa/castigo real</strong> se falhar. O medo de pagar a multa te força a agir.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">📜 Grimório</div>
+                        <p class="guide-p">O local para criar e monitorar suas soft skills e estudos de longo prazo (ex: aprender inglês, programar, oratória). Cada vez que estuda e envia um resumo, a perícia ganha experiência separada. Ao subir o nível de uma perícia, você ganha pontos permanentes de Inteligência (INT).</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">🎮 Platinas</div>
+                        <p class="guide-p">O seu gerenciador de lazer. Liste os jogos eletrônicos ou hobbies que você está jogando na vida real para acompanhar o status de progresso deles e gerenciar sua lista de metas de entretenimento.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">📖 Diário</div>
+                        <p class="guide-p">Um espaço seguro e criptografado localmente para desabafos, revisões semanais e anotações mentais sobre seus pontos de melhoria. Escreva e tranque as páginas para criar um histórico da sua evolução mental.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
-    let saveState = JSON.parse(localStorage.getItem('rpg_solo_v10_0')) || {
+    let saveState = JSON.parse(localStorage.getItem('rpg_solo_v11_0')) || {
         jogador: { xp: 0, nivel: 1, tempoJogo: 0, potions: 0, moral: 50 },
         atributos: { FOR: 10, INT: 10, SAB: 10, CAR: 10, DES: 10 }, 
         statusQuests: {}, 
-        diaSelecionado: "Sábado",
+        diaSelecionado: "Segunda",
         modoViagemAtivo: false,
         jogosPlatinas: [],
         diario: [],
@@ -431,14 +510,14 @@
         missaoUrgenteAtiva: null,
         conquistasDesbloqueadas: [],
         maldicoes: [],
-        falhasConsecutivas: {}
+        falhasConsecutivas: {},
+        numeroSemanaAtual: null
     };
 
-    // BANCO DE MISSÕES COM INFRAESTRUTURA DE CONTINGÊNCIA (ESTRADA)
     const bancoMissoes = [
         { 
             id: 12, attr: "DES", comboKey: "sono", moral: 2, 
-            texto: "Sono: Dormir antes de 1H e acordar até as 7H", 
+            texto: "Sono: Dormir antes de 1H and acordar até as 7H", 
             textoContingencia: "⛺ Sono na Estrada: Dormir antes de 1H30 e manter o despertador regulado",
             xp: 45, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Horário real registrado?" 
         },
@@ -468,15 +547,33 @@
         },
         { 
             id: 2, attr: "CAR", tipo: "normal", moral: 3, 
-            texto: "💖 Romance: Dedicar attention focada (Presença Real)", 
+            texto: "💖 Romance: Dedicar atenção focada (Presença Real)", 
             textoContingencia: "💖 Conexão de Longa Distância: Uma ligação ou chamada de vídeo focada de 15 minutos",
             xp: 25, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a interação remota?" 
+        },
+        { 
+            id: 16, attr: "CAR", tipo: "normal", moral: 4, 
+            texto: "🌹 Gestos de Carinho: Fazer uma surpresa real para ela (Escrever carta física, entregar flores, chocolate etc)", 
+            textoContingencia: "📱 Afeto Conectado: Enviar uma mensagem especial de admiração surpresa ou planejar um encontro futuro",
+            xp: 40, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "O que você realizou hoje de surpresa?" 
+        },
+        { 
+            id: 17, attr: "SAB", tipo: "normal", moral: 3,
+            texto: "🗺️ Alinhamento de Linha do Tempo: Sentar por 15 min com ela para alinhar a agenda e planos da semana",
+            textoContingencia: "📱 Sincronia Remota: Alinhar por chamada de áudio os dias livres e compromissos mútuos da semana",
+            xp: 35, pXp: 15, pTempo: 1, dias: ["Domingo"], placeholder: "O que alinharam para os próximos dias?"
         },
         { 
             id: 14, attr: "CAR", tipo: "normal", moral: 3, 
             texto: "🛡️ Quest de Clã: Convivência familiar de 20 min totalmente sem telas", 
             textoContingencia: "🛡️ Reporte de Expedição: Dar um retorno calmo e atencioso para os familiares sobre como você está",
             xp: 35, pXp: 15, pTempo: 1, dias: ["Sábado", "Domingo"], placeholder: "Com quem falou?" 
+        },
+        { 
+            id: 18, attr: "DES", tipo: "normal", moral: 2,
+            texto: "🛠️ Auxílio aos Aliados: Prestar um favor proativo para alguém da família sem que peçam (limpeza, conserto, etc)",
+            textoContingencia: "📦 Suporte Remoto: Resolver um problema digital, burocrático ou dar um suporte urgente à distância para a família",
+            xp: 30, pXp: 15, pTempo: 0, dias: ["Quarta", "Sábado"], placeholder: "Qual foi o ato de suporte realizado?"
         },
         { 
             id: 11, attr: "SAB", tipo: "normal", moral: 4, 
@@ -501,6 +598,12 @@
             texto: "Acadêmico: Estudar 15 min ou adiantar prazos da faculdade", 
             textoContingencia: "📝 Mapeamento de Cronograma: Revisar e atualizar as datas e prazos de entregas no portal acadêmico",
             xp: 40, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Quais prazos mapeou hoje?" 
+        },
+        { 
+            id: 19, attr: "CAR", tipo: "normal", moral: 2,
+            texto: "🎓 Aliança Científica: Fazer uma pergunta relevante em aula ou tirar uma dúvida crítica com o professor/colega",
+            textoContingencia: "💬 Networking Acadêmico: Responder/ajudar alguém no grupo de estudos ou mandar e-mail sobre projetos",
+            xp: 30, pXp: 15, pTempo: 0, dias: ["Terça", "Quinta"], placeholder: "Qual foi a dúvida levantada ou interação feita?"
         },
         { 
             id: 4, attr: "FOR", comboKey: "treino", moral: 2, tipo: "normal", 
@@ -530,7 +633,6 @@
         "Guarde 5 peças de roupa espalhadas."
     ];
 
-    // GERADOR DINÂMICO DE 100 CONQUISTAS (Organizado por categorias de progressão)
     const bancoConquistas = [];
     const categorias = [
         { prefixo: "lvl", nome: "👑 Nível de Personagem", chave: "nivel", marcos: [2,3,4,5,6,7,8,9,10,12,14,16,18,20,25,30,35,40,45,50] },
@@ -566,12 +668,27 @@
     let timerInterval = null;
     let timerSegundos = 1500;
 
-    function salvar() { localStorage.setItem('rpg_solo_v10_0', JSON.stringify(saveState)); }
+    function salvar() { localStorage.setItem('rpg_solo_v11_0', JSON.stringify(saveState)); }
+
+    function checarEExecutarResetSemanalAutomatico() {
+        const agora = new Date();
+        const dePrimeiroDeAno = new Date(agora.getFullYear(), 0, 1);
+        const diasNum = Math.floor((agora - dePrimeiroDeAno) / (24 * 60 * 60 * 1000));
+        const semanaDoAno = Math.ceil((diasNum + dePrimeiroDeAno.getDay() + 1) / 7);
+        const chaveSemanaUnica = `${agora.getFullYear()}_${semanaDoAno}`;
+
+        if (saveState.numeroSemanaAtual !== chaveSemanaUnica) {
+            saveState.statusQuests = {};
+            saveState.numeroSemanaAtual = chaveSemanaUnica;
+            salvar();
+            console.log("🔄 Reset Semanal Executado Automaticamente!");
+        }
+    }
 
     function alternarModoViagem() {
         saveState.modoViagemAtivo = !saveState.modoViagemAtivo;
         if(saveState.modoViagemAtivo) {
-            alert("⛺ PROTOCOLO DE CONTINGÊNCIA ATIVADO!\n\nAs metas foram adaptadas para o ambiente externo.");
+            alert("⛺ PROTOCOLO DE CONTINGÊNCIA ATIVADO!");
         } else {
             alert("🏠 RETORNO À BASE OPERACIONAL!");
         }
@@ -591,7 +708,7 @@
         if (!cod) return;
         try {
             saveState = JSON.parse(decodeURIComponent(escape(atob(cod.trim()))));
-            salvar(); verificarConquistas(); atualizarInterface(); alert("Save carregado!");
+            salvar(); verificarConquistas(); checarEExecutarResetSemanalAutomatico(); atualizarInterface(); alert("Save carregado!");
         } catch(e) { alert("Código corrompido."); }
     }
 
@@ -604,9 +721,17 @@
 
     function mudarDia(d) { saveState.diaSelecionado = d; salvar(); atualizarInterface(); }
 
+    function definirDiaAtualAutomatico() {
+        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        const hoje = diasSemana[new Date().getDay()];
+        if(!localStorage.getItem('rpg_solo_v11_0')) {
+            saveState.diaSelecionado = hoje;
+        }
+    }
+
     function gastarHora() {
         if(document.body.classList.contains('bloqueio-boss')) {
-            return alert("⛔ ACESSO RESTRITO!\n\nUma Invasão de Boss está ativa. Resolva as obrigações pendentes!");
+            return alert("⛔ ACESSO RESTRITO! Resolva as obrigações pendentes!");
         }
         saveState.jogador.tempoJogo--;
         verificarConquistas();
@@ -739,7 +864,7 @@
 
     function finalizarContrato(id, sucesso) {
         const c = saveState.contratos.find(item => item.id === id);
-        if(!sucesso) alert(`💸 ACORDO QUEBRADO!\n\nPague imediatamente: [${c.multa}] para ${c.fiscal}.`);
+        if(!sucesso) alert(`💸 ACORDO QUEBRADO! Pague: [${c.multa}] para ${c.fiscal}.`);
         saveState.contratos = saveState.contratos.filter(item => item.id !== id);
         salvar(); atualizarInterface();
     }
@@ -766,7 +891,7 @@
         while (saveState.jogador.xp < 0) {
             if(saveState.jogador.nivel > 1) { 
                 saveState.jogador.nivel--; saveState.jogador.xp = 100 + saveState.jogador.xp; 
-                alert(`🚨 REBAIXAMENTO DE NÍVEL! Você caiu para o Nível ${saveState.jogador.nivel}.`);
+                alert(`🚨 REBAIXAMENTO DE NÍVEL!`);
                 const attrs = ["FOR", "INT", "SAB", "CAR", "DES"];
                 const sorteado = attrs[Math.floor(Math.random() * attrs.length)];
                 saveState.atributos[sorteado] = Math.max(10, (saveState.atributos[sorteado] || 10) - 1);
@@ -774,20 +899,14 @@
         }
     }
 
-    // MONITOR INTEGRADO PARA AS 100 CONQUISTAS DINÂMICAS
     function verificarConquistas() {
         if (!saveState.conquistasDesbloqueadas) saveState.conquistasDesbloqueadas = [];
-        
         let totalPericiasNivel = 0;
-        if(saveState.skills) {
-            saveState.skills.forEach(s => totalPericiasNivel += s.nivel);
-        }
-
+        if(saveState.skills) { saveState.skills.forEach(s => totalPericiasNivel += s.nivel); }
         let comboTotal = (saveState.streaks.sono || 0) + (saveState.streaks.treino || 0) + (saveState.streaks.mente || 0);
 
         bancoConquistas.forEach(c => {
             if (saveState.conquistasDesbloqueadas.includes(c.id)) return;
-
             let extraiValor = parseInt(c.id.split('_')[1]);
             let tipo = c.id.split('_')[0];
             let elegivel = false;
@@ -810,7 +929,6 @@
         const chave = `${saveState.diaSelecionado}_${id}`;
         
         saveState.statusQuests[chave] = { status: "concluida", dados: dados };
-        
         if(saveState.maldicoes.includes("Letargia Crônica")) { xpGanho = Math.floor(xpGanho / 2); }
         saveState.jogador.xp += xpGanho; 
         saveState.jogador.tempoJogo++;
@@ -831,7 +949,6 @@
 
     function punirQuest(id) {
         const m = bancoMissoes.find(item => item.id === id); if (!m) return;
-        
         let multiplicadorPunicao = saveState.modoViagemAtivo ? 1.5 : 1.0;
         let pXpFinal = Math.floor(m.pXp * multiplicadorPunicao);
 
@@ -846,7 +963,6 @@
         if(m.comboKey) {
             saveState.streaks[m.comboKey] = 0;
             saveState.falhasConsecutivas[m.comboKey] = (saveState.falhasConsecutivas[m.comboKey] || 0) + 1;
-            
             if(m.comboKey === 'sono' && saveState.falhasConsecutivas.sono >= 2 && !saveState.maldicoes.includes("Letargia Crônica")) {
                 saveState.maldicoes.push("Letargia Crônica");
             }
@@ -933,16 +1049,12 @@
         const descContingency = document.getElementById('txt-contingency-desc');
 
         if(saveState.modoViagemAtivo) {
-            btnViagem.innerText = "Desativar Modo Estrada";
-            btnViagem.classList.add('active');
-            titContingency.innerText = "⛺ Modo Atual: Contrato de Contingência";
-            titContingency.style.color = "var(--contingency-color)";
+            btnViagem.innerText = "Desativar Modo Estrada"; btnViagem.classList.add('active');
+            titContingency.innerText = "⛺ Modo Atual: Contrato de Contingência"; titContingency.style.color = "var(--contingency-color)";
             descContingency.innerText = "Objetivos adaptados à rua ativos. Cuidado: falhas aqui tiram 1.5x mais XP.";
         } else {
-            btnViagem.innerText = "Ativar Fora da Base";
-            btnViagem.classList.remove('active');
-            titContingency.innerText = "⚙️ Modo Atual: Base Operacional Fixa";
-            titContingency.style.color = "var(--text)";
+            btnViagem.innerText = "Ativar Fora da Base"; btnViagem.classList.remove('active');
+            titContingency.innerText = "⚙️ Modo Atual: Base Operacional Fixa"; titContingency.style.color = "var(--text)";
             descContingency.innerText = "Suas missões normais de casa estão ativas. Se for viajar, ative o protocolo abaixo.";
         }
 
@@ -999,7 +1111,6 @@
             
             let mult = m.comboKey && saveState.streaks[m.comboKey] >= 3 ? m.xp * 2 : m.xp;
             let displayXp = saveState.maldicoes.includes("Letargia Crônica") ? Math.floor(mult / 2) : mult;
-
             let textoMissaoFinal = saveState.modoViagemAtivo ? (m.textoContingencia || m.texto) : m.texto;
 
             let h = `
@@ -1020,7 +1131,6 @@
             li.innerHTML = h; listaM.appendChild(li);
         });
 
-        // RENDERIZAÇÃO E ATUALIZAÇÃO DO FILTRO DE 100 CONQUISTAS
         const gridA = document.getElementById('grid-achievements'); gridA.innerHTML = '';
         let countDesbloqueadas = 0;
         bancoConquistas.forEach(c => {
@@ -1050,7 +1160,7 @@
         const gridC = document.getElementById('grid-contratos'); gridC.innerHTML = '';
         saveState.contratos.forEach(c => {
             const div = document.createElement('div'); div.className = 'dg-card'; div.style.borderColor = "var(--warning)";
-            div.innerHTML = `<div class="dg-header"><span>🤝 Contrato: ${c.fiscal}</span></div><p style="font-size:0.8rem; margin:4px 0;"><b>Missão:</b> ${c.missao}<br><b>Fiança/Castigo:</b> ${c.multa}</p><div style="display:flex; gap:5px;"><button class="btn-main" style="background-color:var(--success); font-size:0.7er; padding:4px;" onclick="finalizarContrato(${c.id}, true)">Cumprido</button><button class="btn-main" style="background-color:var(--danger); font-size:0.7rem; padding:4px;" onclick="finalizarContrato(${c.id}, false)">Quebrei as Regras</button></div>`;
+            div.innerHTML = `<div class="dg-header"><span>🤝 Contrato: ${c.fiscal}</span></div><p style="font-size:0.8rem; margin:4px 0;"><b>Missão:</b> ${c.missao}<br><b>Fiança/Castigo:</b> ${c.multa}</p><div style="display:flex; gap:5px;"><button class="btn-main" style="background-color:var(--success); font-size:0.75rem; padding:4px;" onclick="finalizarContrato(${c.id}, true)">Cumprido</button><button class="btn-main" style="background-color:var(--danger); font-size:0.75rem; padding:4px;" onclick="finalizarContrato(${c.id}, false)">Quebrei as Regras</button></div>`;
             gridC.appendChild(div);
         });
 
@@ -1069,6 +1179,7 @@
             div.innerHTML = `<div><h4>${j.nome}</h4><p>${j.status}</p></div><button style="background:none; border:none;" onclick="alternarStatusJogo(${j.id})"><span>${j.status==='Platinado'?'🏆':'⚔️'}</span></button>`;
             gridP.appendChild(div);
         });
+
         const histD = document.getElementById('historico-diario'); histD.innerHTML = '';
         saveState.diario.forEach(e => {
             const div = document.createElement('div'); div.className = 'log-entry';
@@ -1077,6 +1188,8 @@
         });
     }
 
+    definirDiaAtualAutomatico();
+    checarEExecutarResetSemanalAutomatico();
     atualizarInterface();
 </script>
 </body>
