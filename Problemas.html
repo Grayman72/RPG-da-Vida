@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG da Vida Real - Modo Solo v10.0</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0f;
+            --card-bg: #16161a;
+            --primary: #9b67ff;
+            --text: #e1e1e6;
+            --text-dark: #8d8d99;
+            --success: #00b37e;
+            --info: #61dafb;
+            --danger: #f75a68;
+            --warning: #e1b12c;
+            --curse-color: #a55eea;
+            --contingency-color: #ff9f43;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container { width: 100%; max-width: 950px; }
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.6rem; letter-spacing: 1px; }
+
+        .contingency-banner {
+            background-color: #2c1a10;
+            border: 2px dashed var(--contingency-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .contingency-text h3 { margin: 0; color: var(--contingency-color); font-size: 1rem; }
+        .contingency-text p { margin: 3px 0 0 0; font-size: 0.8rem; color: var(--text-dark); }
+        .btn-toggle-mode {
+            background-color: #121214;
+            border: 1px solid var(--contingency-color);
+            color: var(--contingency-color);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .btn-toggle-mode.active {
+            background-color: var(--contingency-color);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 159, 67, 0.4);
+        }
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .game-layout { grid-template-columns: 1fr; gap: 15px; }
+            .contingency-banner { flex-direction: column; text-align: center; }
+        }
+
+        .sidebar-status {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            height: fit-content;
+            border: 1px solid #292930;
+            border-top: 4px solid var(--danger);
+        }
+
+        .level-header { text-align: center; font-weight: bold; font-size: 1.2rem; color: #fff; }
+        .xp-text { text-align: center; font-size: 0.8rem; color: var(--text-dark); margin-bottom: 10px; }
+
+        .progress-bar-container { background-color: #0d0d0f; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid #292930; }
+        .progress-bar { background-color: var(--primary); height: 100%; width: 0%; transition: width 0.4s ease; }
+
+        .status-title { font-size: 0.85rem; font-weight: bold; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid #292930; padding-bottom: 5px; margin-top: 15px; }
+        
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+        .stat-name { display: flex; align-items: center; gap: 6px; }
+        .stat-value { font-weight: bold; background-color: #0d0d0f; padding: 2px 6px; border-radius: 4px; border: 1px solid #292930; }
+
+        .alignment-container { background: #0d0d0f; padding: 10px; border-radius: 6px; border: 1px solid #292930; margin-bottom: 10px; }
+        .alignment-bar-bg { background: #292930; height: 12px; border-radius: 6px; overflow: hidden; position: relative; margin: 5px 0; }
+        .alignment-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger) 0%, var(--warning) 50%, var(--success) 100%); width: 50%; transition: width 0.5s ease; }
+        .alignment-labels { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: bold; }
+
+        .curse-panel { background: #1a1021; border: 1px solid var(--curse-color); padding: 10px; border-radius: 6px; margin-top: 15px; display: none; }
+        .curse-title { font-size: 0.75rem; font-weight: bold; color: var(--curse-color); text-transform: uppercase; margin-bottom: 5px; }
+        .curse-item { font-size: 0.8rem; color: #e1e1e6; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; margin-top: 4px; border-left: 3px solid var(--curse-color); }
+
+        .gt-box { background-color: #0d0d0f; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #292930; margin-top: 15px; }
+        .gt-hours { font-size: 1.6rem; font-weight: bold; color: var(--info); margin: 3px 0; }
+        .gt-hours.devedor { color: var(--danger); }
+        .btn-use-time { background-color: var(--danger); border: none; color: white; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; width: 100%; margin-top: 6px; }
+
+        .backup-zone { margin-top: 12px; padding-top: 12px; border-top: 1px solid #292930; display: flex; gap: 8px; }
+        .btn-backup { flex: 1; background-color: #121214; border: 1px solid #292930; color: var(--text-dark); padding: 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; font-weight: bold; }
+
+        .main-content { display: flex; flex-direction: column; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { background-color: var(--card-bg); border: 1px solid #292930; color: var(--text-dark); padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+        .tab-btn.active { background-color: var(--danger); color: white; border-color: var(--danger); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .section-title { font-size: 0.9rem; margin: 15px 0 8px 0; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+
+        .streak-panel { display: flex; gap: 8px; margin-bottom: 15px; background: #121214; padding: 10px; border-radius: 8px; border: 1px solid #292930; }
+        .streak-badge { flex: 1; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-dark); background: var(--card-bg); padding: 6px; border-radius: 5px; border-top: 2px solid #292930; }
+
+        .procrastination-panel { background: linear-gradient(135deg, #16161a 0%, #111c24 100%); border: 1px solid var(--info); padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .emergency-box { background: rgba(0, 0, 0, 0.4); border-radius: 6px; padding: 12px; margin: 10px 0; font-size: 1rem; font-weight: bold; color: #fff; border-left: 4px solid var(--info); display: none; }
+
+        input[type="text"], input[type="number"], textarea, select { background-color: #0d0d0f; border: 1px solid #292930; color: var(--text); padding: 10px; border-radius: 4px; font-family: inherit; font-size: 0.9rem; }
+        button.btn-main { background-color: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+        .mission-list { list-style: none; padding: 0; margin: 0; }
+        .mission-item { background-color: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; flex-direction: column; border-left: 4px solid #292930; }
+        .mission-header { display: flex; align-items: center; width: 100%; gap: 5px; }
+        .mission-text-span { font-size: 0.9rem; font-weight: 500; line-height: 1.3; flex: 1; }
+        
+        .mission-item.concluida { opacity: 0.6; border-left: 4px solid var(--success); }
+        .mission-item.concluida .mission-text-span { text-decoration: line-through; color: var(--text-dark); }
+        .mission-item.falhada { border-left: 4px solid var(--danger); background: linear-gradient(135deg, var(--card-bg) 0%, #291818 100%); }
+
+        .badge-container { display: flex; gap: 4px; align-items: center; margin-left: auto; }
+        .xp-badge { background-color: #292930; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; color: var(--primary); font-weight: bold; }
+        .stat-badge { background-color: #0d0d0f; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; color: var(--warning); font-weight: bold; border: 1px solid #292930; }
+        .btn-fail { background-color: #0d0d0f; border: 1px solid var(--danger); color: var(--danger); padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; cursor: pointer; }
+
+        .evidence-box { margin-top: 10px; padding-top: 10px; border-top: 1px solid #292930; display: flex; flex-direction: column; gap: 6px; }
+        .input-full { width: 100%; box-sizing: border-box; }
+        .evidence-box textarea { height: 45px; resize: vertical; box-sizing: border-box; }
+        .evidence-box button { background-color: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; align-self: flex-end; font-size: 0.8rem; }
+        
+        .evidence-log { font-size: 0.8rem; color: var(--success); margin-top: 5px; font-style: italic; background-color: #0e1f16; padding: 6px; border-radius: 4px; }
+        .penalty-log { font-size: 0.8rem; color: var(--danger); margin-top: 5px; font-weight: bold; background-color: #241414; padding: 6px; border-radius: 4px; }
+
+        .day-selector { display: flex; justify-content: space-between; background-color: var(--card-bg); padding: 6px; border-radius: 6px; margin-bottom: 10px; overflow-x: auto; gap: 2px; }
+        .day-btn { background: none; border: none; color: var(--text-dark); padding: 6px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.75rem; flex: 1; text-align: center; }
+        .day-btn.active { background-color: var(--danger); color: white; }
+
+        /* QUADRO DE CONQUISTAS OTIMIZADO */
+        .achievements-stats-header { background: #121214; padding: 10px; border-radius: 6px; border: 1px solid #292930; margin-bottom: 15px; font-size: 0.85rem; font-weight: bold; color: var(--warning); text-align: center; }
+        .achievements-grid { display: grid; grid-template-columns: 1fr; gap: 8px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
+        .achievement-card { background: var(--card-bg); padding: 10px; border-radius: 6px; border: 1px solid #292930; border-left: 4px solid #41414c; display: flex; justify-content: space-between; align-items: center; }
+        .achievement-card.unlocked { border-left-color: var(--warning); background: linear-gradient(135deg, var(--card-bg) 0%, #2e2612 100%); }
+        .achievement-info h4 { margin: 0; font-size: 0.85rem; color: #fff; }
+        .achievement-info p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-dark); }
+        .achievement-status { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 3px 6px; border-radius: 4px; background: #0d0d0f; }
+
+        .potion-panel { background: var(--card-bg); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #292930; margin-bottom: 15px; }
+        .timer-display { font-size: 2.5rem; font-weight: bold; color: var(--info); font-family: monospace; margin: 10px 0; }
+        .potion-count { display: inline-flex; align-items: center; gap: 5px; background: #0d0d0f; padding: 5px 12px; border-radius: 20px; color: var(--warning); font-weight: bold; font-size: 0.9rem; border: 1px solid #292930; }
+        .dg-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .dg-card { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid #292930; border-top: 4px solid var(--danger); }
+        .dg-card.boss-invasao { border-top-color: #ff3838; background: linear-gradient(135deg, #16161a 0%, #3a0d0d 100%); animation: pulse-border 2s infinite; }
+        .dg-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; }
+        
+        .finance-panel { background-color: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; border: 1px solid #292930; }
+        .finance-row-input { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+        .gold-display { font-size: 1.3rem; font-weight: bold; color: var(--warning); background-color: #0d0d0f; padding: 5px 12px; border-radius: 6px; border: 1px solid #292930; }
+        
+        .loot-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .loot-card { background-color: #121214; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning); display: flex; flex-direction: column; gap: 6px; }
+        .loot-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem; }
+        .loot-progress-container { background-color: #0d0d0f; height: 8px; border-radius: 4px; overflow: hidden; }
+        .loot-progress-bar { height: 100%; background-color: var(--warning); width: 0%; transition: width 0.3s; }
+        .btn-buy-loot { background-color: var(--success); border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; align-self: flex-end; }
+        .btn-buy-loot:disabled { background-color: #292930; color: var(--text-dark); cursor: not-allowed; }
+        
+        .skills-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .skill-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid #292930; }
+        .skill-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+        .skill-bar-container { background: #0d0d0f; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+        .skill-bar { background: var(--info); height: 100%; width: 0%; transition: width 0.3s; }
+        .skill-action { display: flex; gap: 5px; }
+        .skill-action input { flex: 1; font-size: 0.75rem; padding: 5px; }
+        .skill-action button { background: #292930; border: 1px solid var(--info); color: var(--info); font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        
+        .platina-form { display: flex; flex-direction: column; gap: 8px; background-color: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #292930; }
+        .platina-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .game-card { background-color: var(--card-bg); padding: 10px; border-radius: 8px; border-top: 3px solid var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
+        .game-card.concluido { border-top-color: var(--warning); background: linear-gradient(135deg, var(--card-bg) 0%, #3a3014 100%); }
+        .game-card h4 { margin: 0; font-size: 0.95rem; }
+        .game-card p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-dark); }
+        
+        .diario-box { background-color: var(--card-bg); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .diario-box textarea { height: 90px; resize: vertical; }
+        .historico-diario { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .log-entry { background-color: var(--card-bg); padding: 10px; border-radius: 8px; border-left: 3px solid var(--info); }
+        .log-date { font-size: 0.75rem; color: var(--info); font-weight: bold; margin-bottom: 3px; }
+        .log-body { font-size: 0.85rem; white-space: pre-wrap; line-height: 1.3; }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(247, 90, 104, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(247, 90, 104, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(247, 90, 104, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>RPG Solo — Modo Hardcore v10.0</h1>
+        <p style="color: var(--danger); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; margin: 3px 0 0 0;">💀 100 Desafios de Conquistas Ativados</p>
+    </header>
+
+    <div class="contingency-banner">
+        <div class="contingency-text">
+            <h3 id="txt-contingency-titulo">⚙️ Modo Atual: Base Operacional Fixa</h3>
+            <p id="txt-contingency-desc">Suas missões normais de casa estão ativas. Se for viajar, ative o protocolo abaixo.</p>
+        </div>
+        <button class="btn-toggle-mode" id="btn-modo-viagem" onclick="alternarModoViagem()">Ativar Fora da Base</button>
+    </div>
+
+    <div class="game-layout">
+        
+        <div class="sidebar-status">
+            <div class="level-header">NÍVEL <span id="lbl-nivel">1</span></div>
+            <div class="xp-text"><span id="lbl-xp">0</span> / 100 XP</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="barra-progresso"></div>
+            </div>
+
+            <div class="alignment-container">
+                <div class="alignment-labels"><span style="color:var(--danger)">🌑 Caos</span><span id="lbl-moral">Neutro</span><span style="color:var(--success)">☀️ Ordem</span></div>
+                <div class="alignment-bar-bg"><div class="alignment-bar-fill" id="barra-moral"></div></div>
+            </div>
+
+            <div class="curse-panel" id="painel-maldicoes">
+                <div class="curse-title">🔮 Maldições Ativas:</div>
+                <div id="lista-maldicoes"></div>
+            </div>
+
+            <div class="status-title">⚔️ Atributos</div>
+            <div class="stat-row"><div class="stat-name">💪 Força (FOR)</div><div class="stat-value" id="stat-for">10</div></div>
+            <div class="stat-row"><div class="stat-name">🧠 Inteligência (INT)</div><div class="stat-value" id="stat-int">10</div></div>
+            <div class="stat-row"><div class="stat-name">🦉 Sabedoria (SAB)</div><div class="stat-value" id="stat-sab">10</div></div>
+            <div class="stat-row"><div class="stat-name">👑 Carisma (CAR)</div><div class="stat-value" id="stat-car">10</div></div>
+            <div class="stat-row"><div class="stat-name">🎯 Destreza (DES)</div><div class="stat-value" id="stat-des">10</div></div>
+
+            <div class="gt-box">
+                <span style="font-size: 0.7rem; color: var(--text-dark); font-weight: bold; text-transform: uppercase;">Game Time</span>
+                <div class="gt-hours" id="display-tempo">0H</div>
+                <button class="btn-use-time" onclick="gastarHora()">Gastar 1H de Jogo</button>
+            </div>
+
+            <div class="backup-zone">
+                <button class="btn-backup" onclick="exportarSave()">🔒 Copiar</button>
+                <button class="btn-backup" onclick="importarSave()">📥 Importar</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="trocarAaba('quests')" id="tab-quests">⚔️ Quests</button>
+                <button class="tab-btn" onclick="trocarAaba('foco')" id="tab-foco">🧪 Foco</button>
+                <button class="tab-btn" onclick="trocarAaba('achievements')" id="tab-achievements">🏆 Conquistas</button>
+                <button class="tab-btn" onclick="trocarAaba('tesouraria')" id="tab-tesouraria">💰 Tesouraria</button>
+                <button class="tab-btn" onclick="trocarAaba('mercenarios')" id="tab-mercenarios">🤝 Mercenários</button>
+                <button class="tab-btn" onclick="trocarAaba('skills')" id="tab-skills">📜 Grimório</button>
+                <button class="tab-btn" onclick="trocarAaba('platinas')" id="tab-platinas">🎮 Platinas</button>
+                <button class="tab-btn" onclick="trocarAaba('dicionario')" id="tab-dicionario">📖 Dicionário</button>
+            </div>
+
+            <div id="content-quests" class="tab-content active">
+                <div class="procrastination-panel">
+                    <span style="font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: var(--info); letter-spacing: 1px;">⚡ Comando Relâmpago Contra Procrastinação</span>
+                    <div id="box-missao-urgente" class="emergency-box"></div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn-main" id="btn-gerar-urgente" onclick="gerarMissaoUrgente()" style="background-color: var(--info); font-size: 0.8rem;">Girar Comando de Emergência</button>
+                        <button class="btn-main" id="btn-concluir-urgente" onclick="concluirMissaoUrgente()" style="background-color: var(--success); font-size: 0.8rem; display: none;">Cumprido nos 15m!</button>
+                    </div>
+                </div>
+
+                <div class="streak-panel">
+                    <div class="streak-badge" id="streak-sono">🛌 Sono: 0d</div>
+                    <div class="streak-badge" id="streak-treino">🏋️ Treino: 0d</div>
+                    <div class="streak-badge" id="streak-mente">🛡️ Ilusão: 0d</div>
+                </div>
+
+                <div class="day-selector">
+                    <button class="day-btn" onclick="mudarDia('Segunda')" id="btn-Segunda">SEG</button>
+                    <button class="day-btn" onclick="mudarDia('Terça')" id="btn-Terça">TER</button>
+                    <button class="day-btn" onclick="mudarDia('Quarta')" id="btn-Quarta">QUA</button>
+                    <button class="day-btn" onclick="mudarDia('Quinta')" id="btn-Quinta">QUI</button>
+                    <button class="day-btn" onclick="mudarDia('Sexta')" id="btn-Sexta">SEX</button>
+                    <button class="day-btn" onclick="mudarDia('Sábado')" id="btn-Sábado">SÁB</button>
+                    <button class="day-btn" onclick="mudarDia('Domingo')" id="btn-Domingo">DOM</button>
+                </div>
+
+                <div class="section-title" id="dg-titulo-header">👿 Dungeon Semanal / Bosses</div>
+                <div class="platina-form" style="margin-bottom: 15px;">
+                    <input type="text" id="dg-nome" placeholder="Nome do Grande Desafio Real...">
+                    <button class="btn-main" onclick="adicionarDungeon()" style="background-color: var(--danger);">Invocar Chefe</button>
+                </div>
+                <div class="dg-grid" id="grid-dungeons" style="margin-bottom: 20px;"></div>
+
+                <div class="section-title">Missões Ativas (<span id="nome-dia-atual">Sábado</span>)</div>
+                <ul class="mission-list" id="lista-missoes"></ul>
+            </div>
+
+            <div id="content-foco" class="tab-content">
+                <div class="section-title">🧪 Destilar Poções de Concentração (Pomodoro)</div>
+                <div class="potion-panel">
+                    <div class="potion-count">🧪 Poções no Inventário: <span id="lbl-potions">0</span></div>
+                    <div class="timer-display" id="timer-relogio">25:00</div>
+                    <div style="display:flex; gap:10px; justify-content:center;">
+                        <button class="btn-main" onclick="controlarTimer()" id="btn-timer-acao" style="background-color: var(--success)">Iniciar Foco</button>
+                        <button class="btn-main" onclick="resetarTimer()" style="background-color: var(--card-bg); border: 1px solid #292930;">Resetar</button>
+                    </div>
+                </div>
+                <div class="section-title">Consumir Poção</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-main" onclick="usarPocao('tempo')" style="flex:1; background-color: var(--info)">Beber: Converter em +1H Game Time</button>
+                </div>
+            </div>
+
+            <div id="content-achievements" class="tab-content">
+                <div class="section-title">🏆 Quadro de Proezas de Longo Prazo</div>
+                <div class="achievements-stats-header" id="achievements-totalizer">Desbloqueado: 0 / 100 Conquistas</div>
+                <div class="achievements-grid" id="grid-achievements"></div>
+            </div>
+
+            <div id="content-tesouraria" class="tab-content">
+                <div class="section-title">🪙 Balanço de Fundos Monetários</div>
+                <div class="finance-panel">
+                    <div class="finance-row-input">
+                        <span>Saldo Total em Caixa:</span>
+                        <div class="gold-display" id="gold-saldo">R$ 0,00</div>
+                    </div>
+                    <div class="finance-row-input">
+                        <input type="number" id="finance-novo-saldo" placeholder="Atualizar Saldo Real">
+                        <button class="btn-main" onclick="atualizarSaldoDinheiro()" style="background-color: var(--warning); color: #000;">Registrar Mudança</button>
+                    </div>
+                </div>
+                <div class="section-title">📦 Vincular Alvo de Aquisição</div>
+                <div class="platina-form">
+                    <input type="text" id="loot-nome" placeholder="Item desejado (Ex: Placa de Vídeo)">
+                    <input type="number" id="loot-valor" placeholder="Preço Real (R$)">
+                    <button class="btn-main" onclick="adicionarMetaLoot()">Vincular Destino</button>
+                </div>
+                <div class="section-title">Progresso de Fundos para o Item</div>
+                <div class="loot-grid" id="grid-loots"></div>
+            </div>
+
+            <div id="content-mercenarios" class="tab-content">
+                <div class="section-title">🤝 Firmar Contrato Opcional de Fiscalização</div>
+                <div class="platina-form">
+                    <input type="text" id="mercenario-nome" placeholder="Nome do Fiscal (Ex: Namorada, Pai, Amigo)">
+                    <input type="text" id="mercenario-missao" placeholder="Missão Crítica">
+                    <input type="number" id="mercenario-multa" placeholder="Multa Real ou Castigo Físico">
+                    <button class="btn-main" onclick="adicionarContrato()">Assinar Contrato de Sangue</button>
+                </div>
+                <div class="section-title">Contratos Ativos</div>
+                <div class="dg-grid" id="grid-contratos"></div>
+            </div>
+
+            <div id="content-skills" class="tab-content">
+                <div class="section-title">🔮 Forjar Nova Perícia</div>
+                <div class="skill-form">
+                    <input type="text" id="skill-nome" placeholder="Ex: Estudo de Caso X, Oratória...">
+                    <button class="btn-main" onclick="adicionarSkill()">Criar Perícia</button>
+                </div>
+                <div class="section-title">Suas Maestrias</div>
+                <div class="skills-grid" id="grid-skills"></div>
+            </div>
+
+            <div id="content-platinas" class="tab-content">
+                <div class="section-title">➕ Adicionar Jogo</div>
+                <div class="platina-form">
+                    <input type="text" id="plat-nome" placeholder="Nome do Jogo">
+                    <select id="plat-status-select">
+                        <option value="Em Andamento">Em Andamento ⚔️</option>
+                        <option value="Platinado">Platinado 🏆</option>
+                    </select>
+                    <button class="btn-main" onclick="adicionarJogo()">Registrar</button>
+                </div>
+                <div class="section-title">Roadmap de Troféus</div>
+                <div class="platina-grid" id="grid-platinas"></div>
+            </div>
+
+            <div id="content-dicionario" class="tab-content">
+                <div class="section-title">¼ Trancar Nova Página</div>
+                <div class="diario-box">
+                    <textarea id="diario-texto" placeholder="Escreva reflexões diárias..."></textarea>
+                    <button class="btn-main" style="align-self: flex-end;" onclick="salvarDiario()">Trancar Página</button>
+                </div>
+                <div class="section-title">Páginas Guardadas</div>
+                <div class="historico-diario" id="historico-diario"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let saveState = JSON.parse(localStorage.getItem('rpg_solo_v10_0')) || {
+        jogador: { xp: 0, nivel: 1, tempoJogo: 0, potions: 0, moral: 50 },
+        atributos: { FOR: 10, INT: 10, SAB: 10, CAR: 10, DES: 10 }, 
+        statusQuests: {}, 
+        diaSelecionado: "Sábado",
+        modoViagemAtivo: false,
+        jogosPlatinas: [],
+        diario: [],
+        skills: [],
+        streaks: { sono: 0, treino: 0, mente: 0 },
+        financeiro: { saldo: 0 },
+        metasLoot: [],
+        dungeons: [],
+        contratos: [],
+        missaoUrgenteAtiva: null,
+        conquistasDesbloqueadas: [],
+        maldicoes: [],
+        falhasConsecutivas: {}
+    };
+
+    // BANCO DE MISSÕES COM INFRAESTRUTURA DE CONTINGÊNCIA (ESTRADA)
+    const bancoMissoes = [
+        { 
+            id: 12, attr: "DES", comboKey: "sono", moral: 2, 
+            texto: "Sono: Dormir antes de 1H e acordar até as 7H", 
+            textoContingencia: "⛺ Sono na Estrada: Dormir antes de 1H30 e manter o despertador regulado",
+            xp: 45, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Horário real registrado?" 
+        },
+        { 
+            id: 13, attr: "CAR", tipo: "normal", moral: 1, 
+            texto: "🗣️ O Treino do Bardo: Ler 3 min em voz alta, postura firme", 
+            textoContingencia: "📱 Comunicação Móvel: Enviar um áudio explicativo limpo, articulado e sem gírias",
+            xp: 30, pXp: 15, pTempo: 0, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a dicção?" 
+        },
+        { 
+            id: 1, attr: "CAR", tipo: "normal", moral: 1, 
+            texto: "Higiene: Rotina completa de cuidados + Organização pessoal", 
+            textoContingencia: "🧳 Aparência Externa: Cuidar impecavelmente da vestimenta e apresentação na viagem",
+            xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme os cuidados." 
+        },
+        { 
+            id: 7, attr: "DES", tipo: "normal", moral: 1, 
+            texto: "Ambiente: Arrumar totalmente o quarto e espaço de trabalho", 
+            textoContingencia: "🧳 Inventário Alinhado: Arrumar e fechar a mala perfeitamente (zero bagunça espalhada)",
+            xp: 25, pXp: 20, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado"], placeholder: "O que organizou na acomodação?" 
+        },
+        { 
+            id: 8, attr: "DES", tipo: "normal", moral: 1, 
+            texto: "Ambiente: Limpar louça e pendências domésticas", 
+            textoContingencia: "📱 Filtro Digital: Limpar notificações, e-mails retidos e a Área de Trabalho do notebook",
+            xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme a higienização virtual." 
+        },
+        { 
+            id: 2, attr: "CAR", tipo: "normal", moral: 3, 
+            texto: "💖 Romance: Dedicar attention focada (Presença Real)", 
+            textoContingencia: "💖 Conexão de Longa Distância: Uma ligação ou chamada de vídeo focada de 15 minutos",
+            xp: 25, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a interação remota?" 
+        },
+        { 
+            id: 14, attr: "CAR", tipo: "normal", moral: 3, 
+            texto: "🛡️ Quest de Clã: Convivência familiar de 20 min totalmente sem telas", 
+            textoContingencia: "🛡️ Reporte de Expedição: Dar um retorno calmo e atencioso para os familiares sobre como você está",
+            xp: 35, pXp: 15, pTempo: 1, dias: ["Sábado", "Domingo"], placeholder: "Com quem falou?" 
+        },
+        { 
+            id: 11, attr: "SAB", tipo: "normal", moral: 4, 
+            texto: "Espiritual: Frequentar templo/igreja ou assistir celebração", 
+            textoContingencia: "🎧 Alimento de Campanha: Assistir a um sermão/palestra espiritual em formato de áudio/vídeo completo",
+            xp: 60, pXp: 30, pTempo: 0, dias: ["Domingo"], placeholder: "Mencione a reflexão central." 
+        },
+        { 
+            id: 9, attr: "SAB", tipo: "leitura", moral: 3, 
+            texto: "Espiritual: Leitura e estudo de escrituras sagradas em casa", 
+            textoContingencia: "📖 Escrituras em Trânsito: Estudo de 1 capítulo pelo aplicativo de celular ou livro físico de bolso",
+            xp: 45, pXp: 20, pTempo: 0, dias: ["Segunda", "Quarta", "Sexta", "Domingo"], placeholderMarcador: "Trecho lido?", placeholderResumo: "Ideia retida no deslocamento..." 
+        },
+        { 
+            id: 10, attr: "INT", tipo: "leitura", moral: 2, 
+            texto: "Intelectual: Avançar páginas de livro de desenvolvimento", 
+            textoContingencia: "📱 Leitura Mobile: Ler 10 minutos de um PDF ou e-book técnico/acadêmico no celular",
+            xp: 45, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholderMarcador: "Seção lida?", placeholderResumo: "Resumo em uma frase..." 
+        },
+        { 
+            id: 3, attr: "INT", tipo: "normal", moral: 2, 
+            texto: "Acadêmico: Estudar 15 min ou adiantar prazos da faculdade", 
+            textoContingencia: "📝 Mapeamento de Cronograma: Revisar e atualizar as datas e prazos de entregas no portal acadêmico",
+            xp: 40, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Quais prazos mapeou hoje?" 
+        },
+        { 
+            id: 4, attr: "FOR", comboKey: "treino", moral: 2, tipo: "normal", 
+            texto: "Condicionamento Físico: Musculação ou treino de alta intensidade", 
+            textoContingencia: "🏃‍♂️ Exploração de Terreno: Bater 7.000 passos no dia (caminhada) OU 15 min de calistenia no hotel",
+            xp: 50, pXp: 25, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "Relatório de passos ou repetições?" 
+        },
+        { 
+            id: 5, attr: "SAB", comboKey: "mente", moral: 5, tipo: "normal", 
+            texto: "Resistência à Ilusão (Gatils): Blindar o foco contra dopamina artificial", 
+            textoContingencia: "🛡️ Resistência em Zona Hostil (Gatils): Foco intocado em ambiente externo (Quarto de hotel, aeroporto ou tédio)",
+            xp: 60, pXp: 50, pTempo: 2, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Como blindou seu foco fora da sua zona protegida?" 
+        },
+        { 
+            id: 6, attr: "DES", tipo: "normal", moral: 2, 
+            texto: "Frugalidade: Controlar impulsos e encerrar o dia com zero gastos desnecessários", 
+            textoContingencia: "🪙 Controle de Diárias: Limitar-se rigorosamente apenas aos gastos básicos de alimentação e transporte necessários",
+            xp: 35, pXp: 25, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme o controle de caixa na estrada." 
+        }
+    ];
+
+    const poolUrgentes = [
+        "Beba 500ml de água fria imediatamente.",
+        "Arrume sua mesa de trabalho/computador em 5 minutos.",
+        "Faça 20 flexões ou 30 polichinelos agora para quebrar a inércia.",
+        "Feche as abas inúteis do navegador.",
+        "Guarde 5 peças de roupa espalhadas."
+    ];
+
+    // GERADOR DINÂMICO DE 100 CONQUISTAS (Organizado por categorias de progressão)
+    const bancoConquistas = [];
+    const categorias = [
+        { prefixo: "lvl", nome: "👑 Nível de Personagem", chave: "nivel", marcos: [2,3,4,5,6,7,8,9,10,12,14,16,18,20,25,30,35,40,45,50] },
+        { prefixo: "gt", nome: "⏳ Extrato de Game Time (Cofre)", chave: "gt", marcos: [5,10,15,20,25,30,35,40,45,50,60,70,80,90,100,120,140,160,180,200] },
+        { prefixo: "fin", nome: "🪙 Fundos de Caixa (Tesouraria)", chave: "fin", marcos: [50,100,150,200,300,400,500,600,700,800,900,1000,1200,1500,1800,2000,2500,3000,4000,5000] },
+        { prefixo: "str", nome: "🛡️ Combo Total de Autodisciplina", chave: "str", marcos: [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,35,40,45,50,60] },
+        { prefixo: "skl", nome: "🔮 Grimório de Perícias Ativas", chave: "skl", marcos: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] }
+    ];
+
+    categorias.forEach(cat => {
+        cat.marcos.forEach((marco, i) => {
+            let medalha = "🥉 Bronze";
+            if(i >= 15) medalha = "💎 Diamante";
+            else if(i >= 11) medalha = "👑 Platina";
+            else if(i >= 7) medalha = "🥇 Ouro";
+            else if(i >= 3) medalha = "🥈 Prata";
+
+            let desc = "";
+            if(cat.prefixo === "lvl") desc = `Alcançar o Nível ${marco} Global.`;
+            if(cat.prefixo === "gt") desc = `Acumular um saldo de ${marco} Horas no cofre de Game Time.`;
+            if(cat.prefixo === "fin") desc = `Ter em caixa o montante real de R$ ${marco},00 na Tesouraria.`;
+            if(cat.prefixo === "str") desc = `Somar ${marco} dias totais juntando as correntes de Sono, Treino e Ilusão.`;
+            if(cat.prefixo === "skl") desc = `Desbloquear ou elevar Perícias ${marco} vezes no Grimório.`;
+
+            bancoConquistas.push({
+                id: `${cat.prefixo}_${marco}`,
+                titulo: `${cat.nome} — [${marco}]`,
+                desc: `${medalha}: ${desc}`
+            });
+        });
+    });
+
+    let timerInterval = null;
+    let timerSegundos = 1500;
+
+    function salvar() { localStorage.setItem('rpg_solo_v10_0', JSON.stringify(saveState)); }
+
+    function alternarModoViagem() {
+        saveState.modoViagemAtivo = !saveState.modoViagemAtivo;
+        if(saveState.modoViagemAtivo) {
+            alert("⛺ PROTOCOLO DE CONTINGÊNCIA ATIVADO!\n\nAs metas foram adaptadas para o ambiente externo.");
+        } else {
+            alert("🏠 RETORNO À BASE OPERACIONAL!");
+        }
+        salvar();
+        atualizarInterface();
+    }
+
+    function exportarSave() {
+        try {
+            const txt = btoa(unescape(encodeURIComponent(JSON.stringify(saveState))));
+            navigator.clipboard.writeText(txt).then(() => alert("🔒 Código de Backup copiado!"));
+        } catch(e) { alert("Falha na geração."); }
+    }
+
+    function importarSave() {
+        const cod = prompt("Insira seu código de importação:");
+        if (!cod) return;
+        try {
+            saveState = JSON.parse(decodeURIComponent(escape(atob(cod.trim()))));
+            salvar(); verificarConquistas(); atualizarInterface(); alert("Save carregado!");
+        } catch(e) { alert("Código corrompido."); }
+    }
+
+    function trocarAaba(id) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`content-${id}`).classList.add('active');
+        document.getElementById(`tab-${id}`).classList.add('active');
+    }
+
+    function mudarDia(d) { saveState.diaSelecionado = d; salvar(); atualizarInterface(); }
+
+    function gastarHora() {
+        if(document.body.classList.contains('bloqueio-boss')) {
+            return alert("⛔ ACESSO RESTRITO!\n\nUma Invasão de Boss está ativa. Resolva as obrigações pendentes!");
+        }
+        saveState.jogador.tempoJogo--;
+        verificarConquistas();
+        salvar(); 
+        atualizarInterface();
+    }
+
+    function gerarMissaoUrgente() {
+        const idx = Math.floor(Math.random() * poolUrgentes.length);
+        saveState.missaoUrgenteAtiva = poolUrgentes[idx];
+        salvar(); atualizarInterface();
+    }
+
+    function concluirMissaoUrgente() {
+        if(!saveState.missaoUrgenteAtiva) return;
+        saveState.missaoUrgenteAtiva = null;
+        let ganhoXp = 20;
+        if(saveState.maldicoes.includes("Letargia Crônica")) { ganhoXp = Math.floor(ganhoXp / 2); }
+        saveState.jogador.xp += ganhoXp;
+        checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert(`⚡ Inércia Rompida! (+${ganhoXp} XP)`);
+    }
+
+    function atualizarSaldoDinheiro() {
+        const inp = document.getElementById('finance-novo-saldo');
+        const val = parseFloat(inp.value);
+        if (isNaN(val) || val < 0) return alert("Inserção Inválida!");
+        saveState.financeiro.saldo = val; inp.value = "";
+        verificarConquistas(); salvar(); atualizarInterface();
+    }
+
+    function adicionarMetaLoot() {
+        const n = document.getElementById('loot-nome').value.trim();
+        const v = parseFloat(document.getElementById('loot-valor').value);
+        if(!n || isNaN(v) || v <= 0) return alert("Parâmetros inválidos.");
+        saveState.metasLoot.push({ id: Date.now(), nome: n, valor: v });
+        document.getElementById('loot-nome').value = ""; document.getElementById('loot-valor').value = "";
+        salvar(); atualizarInterface();
+    }
+
+    function adquirirLoot(id, valor) {
+        if(saveState.financeiro.saldo < valor) return alert("Fundos insuficientes.");
+        saveState.financeiro.saldo -= valor;
+        saveState.metasLoot = saveState.metasLoot.filter(l => l.id !== id);
+        let ganhoXp = 150;
+        if(saveState.maldicoes.includes("Letargia Crônica")) { ganhoXp = Math.floor(ganhoXp / 2); }
+        saveState.jogador.xp += ganhoXp;
+        saveState.jogador.tempoJogo += 5;
+        saveState.atributos.CAR += 3;
+        adjustMoral(10);
+        checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("🏆 Compra chancelada!");
+    }
+
+    function controlarTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval); timerInterval = null;
+            document.getElementById('btn-timer-acao').innerText = "Retomar";
+        } else {
+            document.getElementById('btn-timer-acao').innerText = "Pausar";
+            timerInterval = setInterval(() => {
+                timerSegundos--;
+                let m = Math.floor(timerSegundos / 60); let s = timerSegundos % 60;
+                document.getElementById('timer-relogio').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (timerSegundos <= 0) {
+                    clearInterval(timerInterval); timerInterval = null; timerSegundos = 1500;
+                    saveState.jogador.potions = (saveState.jogador.potions || 0) + 1;
+                    document.getElementById('timer-relogio').innerText = "25:00";
+                    document.getElementById('btn-timer-acao').innerText = "Iniciar Foco";
+                    salvar(); atualizarInterface(); alert("🧪 POÇÃO EXTRAÍDA!");
+                }
+            }, 1000);
+        }
+    }
+
+    function resetarTimer() {
+        clearInterval(timerInterval); timerInterval = null; timerSegundos = 1500;
+        document.getElementById('timer-relogio').innerText = "25:00";
+        document.getElementById('btn-timer-acao').innerText = "Iniciar Foco";
+    }
+
+    function usarPocao(tipo) {
+        if((saveState.jogador.potions || 0) <= 0) return alert("Estoque vazio.");
+        saveState.jogador.potions--;
+        if(tipo === 'tempo') saveState.jogador.tempoJogo += 1;
+        verificarConquistas();
+        salvar(); atualizarInterface();
+    }
+
+    function adicionarDungeon() {
+        const n = document.getElementById('dg-nome').value.trim();
+        if(!n) return alert("Identifique a ameaça!");
+        saveState.dungeons.push({ id: Date.now(), nome: n, tipo: 'normal' });
+        document.getElementById('dg-nome').value = ""; salvar(); atualizarInterface();
+    }
+
+    function vencerDungeon(id) {
+        const dg = saveState.dungeons.find(d => d.id === id);
+        saveState.dungeons = saveState.dungeons.filter(d => d.id !== id);
+        let ganhoXp = dg.tipo === 'invasao' ? 300 : 200;
+        if(saveState.maldicoes.includes("Letargia Crônica")) { ganhoXp = Math.floor(ganhoXp / 2); }
+        saveState.jogador.xp += ganhoXp; 
+        saveState.jogador.tempoJogo += 3;
+        adjustMoral(10); checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("⚔️ Alvo eliminado.");
+    }
+
+    function falharDungeon(id) {
+        saveState.dungeons = saveState.dungeons.filter(d => d.id !== id);
+        saveState.jogador.tempoJogo -= 4;
+        adjustMoral(-10);
+        checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("💀 Você recuou.");
+    }
+
+    function checarInvasaoBoss() {
+        let mValue = saveState.jogador.moral ?? 50;
+        let bossAtivo = saveState.dungeons.some(d => d.tipo === 'invasao');
+        if(mValue < 40 && !bossAtivo) {
+            saveState.dungeons.unshift({ id: 999, nome: "INVASÃO: Demônio da Inércia (Tarefa Retida)", tipo: 'invasao' });
+            alert("🚨 ALERTA DE INVASÃO!\n\nSeu entretenimento está confiscado até derrotar este Boss!");
+        }
+    }
+
+    function adicionarContrato() {
+        const n = document.getElementById('mercenario-nome').value.trim();
+        const m = document.getElementById('mercenario-missao').value.trim();
+        const mu = document.getElementById('mercenario-multa').value.trim();
+        if(!n || !m || !mu) return alert("Preencha todos os termos.");
+        saveState.contratos.push({ id: Date.now(), fiscal: n, missao: m, multa: mu });
+        document.getElementById('mercenario-nome').value = ""; document.getElementById('mercenario-missao').value = ""; document.getElementById('mercenario-multa').value = "";
+        salvar(); atualizarInterface();
+    }
+
+    function finalizarContrato(id, sucesso) {
+        const c = saveState.contratos.find(item => item.id === id);
+        if(!sucesso) alert(`💸 ACORDO QUEBRADO!\n\nPague imediatamente: [${c.multa}] para ${c.fiscal}.`);
+        saveState.contratos = saveState.contratos.filter(item => item.id !== id);
+        salvar(); atualizarInterface();
+    }
+
+    function adjustMoral(qtd) { 
+        let antigo = saveState.jogador.moral || 50;
+        saveState.jogador.moral = Math.max(0, Math.min(100, antigo + qtd)); 
+        checarInvasaoBoss();
+    }
+
+    function getMoralLabel(m) {
+        if(m > 80) return "Soberano Técnico ☀️";
+        if(m > 60) return "Ordeiro";
+        if(m >= 40) return "Neutro";
+        if(m >= 20) return "Indisciplinado 🌑";
+        return "Tirano do Caos 💀";
+    }
+
+    function checkLevelUp() {
+        while (saveState.jogador.xp >= 100) { 
+            saveState.jogador.nivel++; saveState.jogador.xp -= 100; 
+            alert(`⚔️ LEVEL UP! Nível ${saveState.jogador.nivel}!`);
+        }
+        while (saveState.jogador.xp < 0) {
+            if(saveState.jogador.nivel > 1) { 
+                saveState.jogador.nivel--; saveState.jogador.xp = 100 + saveState.jogador.xp; 
+                alert(`🚨 REBAIXAMENTO DE NÍVEL! Você caiu para o Nível ${saveState.jogador.nivel}.`);
+                const attrs = ["FOR", "INT", "SAB", "CAR", "DES"];
+                const sorteado = attrs[Math.floor(Math.random() * attrs.length)];
+                saveState.atributos[sorteado] = Math.max(10, (saveState.atributos[sorteado] || 10) - 1);
+            } else { saveState.jogador.xp = 0; }
+        }
+    }
+
+    // MONITOR INTEGRADO PARA AS 100 CONQUISTAS DINÂMICAS
+    function verificarConquistas() {
+        if (!saveState.conquistasDesbloqueadas) saveState.conquistasDesbloqueadas = [];
+        
+        let totalPericiasNivel = 0;
+        if(saveState.skills) {
+            saveState.skills.forEach(s => totalPericiasNivel += s.nivel);
+        }
+
+        let comboTotal = (saveState.streaks.sono || 0) + (saveState.streaks.treino || 0) + (saveState.streaks.mente || 0);
+
+        bancoConquistas.forEach(c => {
+            if (saveState.conquistasDesbloqueadas.includes(c.id)) return;
+
+            let extraiValor = parseInt(c.id.split('_')[1]);
+            let tipo = c.id.split('_')[0];
+            let elegivel = false;
+
+            if (tipo === "lvl" && saveState.jogador.nivel >= extraiValor) elegivel = true;
+            if (tipo === "gt" && saveState.jogador.tempoJogo >= extraiValor) elegivel = true;
+            if (tipo === "fin" && saveState.financeiro.saldo >= extraiValor) elegivel = true;
+            if (tipo === "str" && comboTotal >= extraiValor) elegivel = true;
+            if (tipo === "skl" && totalPericiasNivel >= extraiValor) elegivel = true;
+
+            if (elegivel) {
+                saveState.conquistasDesbloqueadas.push(c.id);
+                alert(`🏆 CONQUISTA DESBLOQUEADA:\n"${c.titulo}"`);
+            }
+        });
+    }
+
+    function concluirQuest(id, xpGanho, attr, dados, moral) {
+        const m = bancoMissoes.find(item => item.id === id);
+        const chave = `${saveState.diaSelecionado}_${id}`;
+        
+        saveState.statusQuests[chave] = { status: "concluida", dados: dados };
+        
+        if(saveState.maldicoes.includes("Letargia Crônica")) { xpGanho = Math.floor(xpGanho / 2); }
+        saveState.jogador.xp += xpGanho; 
+        saveState.jogador.tempoJogo++;
+        saveState.atributos[attr] = (saveState.atributos[attr] || 10) + 1;
+        
+        if (m && m.comboKey) {
+            saveState.streaks[m.comboKey] = (saveState.streaks[m.comboKey] || 0) + 1;
+            saveState.falhasConsecutivas[m.comboKey] = 0; 
+            if(m.comboKey === 'sono' && saveState.streaks.sono >= 3 && saveState.maldicoes.includes("Letargia Crônica")) {
+                saveState.maldicoes = saveState.maldicoes.filter(c => c !== "Letargia Crônica");
+            }
+            if(m.comboKey === 'mente' && saveState.streaks.mente >= 3 && saveState.maldicoes.includes("Vulnerabilidade Psíquica")) {
+                saveState.maldicoes = saveState.maldicoes.filter(c => c !== "Vulnerabilidade Psíquica");
+            }
+        }
+        adjustMoral(moral); checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface();
+    }
+
+    function punirQuest(id) {
+        const m = bancoMissoes.find(item => item.id === id); if (!m) return;
+        
+        let multiplicadorPunicao = saveState.modoViagemAtivo ? 1.5 : 1.0;
+        let pXpFinal = Math.floor(m.pXp * multiplicadorPunicao);
+
+        if (!confirm(`Declarar quebra na Quest? Punição estimada: -${pXpFinal} XP.`)) return;
+        const chave = `${saveState.diaSelecionado}_${id}`;
+        saveState.statusQuests[chave] = { status: "falhada", dados: null };
+        
+        saveState.jogador.tempoJogo -= m.pTempo;
+        saveState.atributos[m.attr] = Math.max(0, (saveState.atributos[m.attr] || 10) - 1);
+        saveState.jogador.xp -= pXpFinal;
+        
+        if(m.comboKey) {
+            saveState.streaks[m.comboKey] = 0;
+            saveState.falhasConsecutivas[m.comboKey] = (saveState.falhasConsecutivas[m.comboKey] || 0) + 1;
+            
+            if(m.comboKey === 'sono' && saveState.falhasConsecutivas.sono >= 2 && !saveState.maldicoes.includes("Letargia Crônica")) {
+                saveState.maldicoes.push("Letargia Crônica");
+            }
+            if(m.comboKey === 'mente' && saveState.falhasConsecutivas.mente >= 1 && !saveState.maldicoes.includes("Vulnerabilidade Psíquica")) {
+                saveState.maldicoes.push("Vulnerabilidade Psíquica");
+                saveState.atributos.SAB = Math.max(10, saveState.atributos.SAB - 2);
+                saveState.atributos.INT = Math.max(10, saveState.atributos.INT - 2);
+            }
+        }
+        adjustMoral(-m.moral); checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface();
+    }
+
+    function validarNormal(id, xp, attr, moral) {
+        const p = document.getElementById(`input-${id}`).value.trim();
+        if(p.length < 3) return alert("Evidência insuficiente.");
+        concluirQuest(id, xp, attr, p, moral);
+    }
+
+    function validarLeitura(id, xp, attr, moral) {
+        const m = document.getElementById(`marcador-${id}`).value.trim();
+        const r = document.getElementById(`resumo-${id}`).value.trim();
+        if(!m || r.length < 15) return alert("Falta profundidade no resumo.");
+        concluirQuest(id, xp, attr, { marcador: m, resumo: r }, moral);
+    }
+
+    function adicionarSkill() {
+        const inp = document.getElementById('skill-nome'); if(!inp.value.trim()) return;
+        if(!saveState.skills) saveState.skills = [];
+        saveState.skills.push({ id: Date.now(), nome: inp.value.trim(), nivel: 1, xp: 0 });
+        inp.value = ""; verificarConquistas(); salvar(); atualizarInterface();
+    }
+
+    function treinarSkill(id) {
+        const res = document.getElementById(`resumo-skill-${id}`).value.trim();
+        if(res.length < 15) return alert("Falta profundidade.");
+        const s = saveState.skills.find(sk => sk.id === id);
+        if(s) {
+            s.xp += 50; 
+            let gXp = 15; if(saveState.maldicoes.includes("Letargia Crônica")) gXp = Math.floor(gXp / 2);
+            saveState.jogador.xp += gXp;
+            if(s.xp >= 100) { s.nivel++; s.xp = 0; saveState.atributos.INT += 1; }
+            document.getElementById(`resumo-skill-${id}`).value = "";
+            checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface();
+        }
+    }
+
+    function adicionarJogo() {
+        const n = document.getElementById('plat-nome').value.trim();
+        const s = document.getElementById('plat-status-select').value;
+        if(!n) return;
+        saveState.jogosPlatinas.push({ id: Date.now(), nome: n, status: s });
+        document.getElementById('plat-nome').value = ""; salvar(); atualizarInterface();
+    }
+
+    function alternarStatusJogo(id) {
+        const j = saveState.jogosPlatinas.find(item => item.id === id);
+        if(j) { j.status = j.status === 'Platinado' ? 'Em Andamento' : 'Platinado'; salvar(); atualizarInterface(); }
+    }
+
+    function salvarDiario() {
+        const t = document.getElementById('diario-texto').value.trim(); if(!t) return;
+        const d = new Date().toLocaleString('pt-BR');
+        saveState.diario.unshift({ data: d, texto: t });
+        document.getElementById('diario-texto').value = ""; salvar(); atualizarInterface();
+    }
+
+    function atualizarInterface() {
+        const dia = saveState.diaSelecionado;
+        document.getElementById('nome-dia-atual').innerText = dia;
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        if(document.getElementById(`btn-${dia}`)) document.getElementById(`btn-${dia}`).classList.add('active');
+
+        document.getElementById('lbl-nivel').innerText = saveState.jogador.nivel;
+        document.getElementById('lbl-xp').innerText = saveState.jogador.xp;
+        document.getElementById('barra-progresso').style.width = saveState.jogador.xp + '%';
+        document.getElementById('lbl-potions').innerText = saveState.jogador.potions || 0;
+
+        let mValue = saveState.jogador.moral ?? 50;
+        document.getElementById('barra-moral').style.width = mValue + '%';
+        document.getElementById('lbl-moral').innerText = getMoralLabel(mValue);
+
+        const btnViagem = document.getElementById('btn-modo-viagem');
+        const titContingency = document.getElementById('txt-contingency-titulo');
+        const descContingency = document.getElementById('txt-contingency-desc');
+
+        if(saveState.modoViagemAtivo) {
+            btnViagem.innerText = "Desativar Modo Estrada";
+            btnViagem.classList.add('active');
+            titContingency.innerText = "⛺ Modo Atual: Contrato de Contingência";
+            titContingency.style.color = "var(--contingency-color)";
+            descContingency.innerText = "Objetivos adaptados à rua ativos. Cuidado: falhas aqui tiram 1.5x mais XP.";
+        } else {
+            btnViagem.innerText = "Ativar Fora da Base";
+            btnViagem.classList.remove('active');
+            titContingency.innerText = "⚙️ Modo Atual: Base Operacional Fixa";
+            titContingency.style.color = "var(--text)";
+            descContingency.innerText = "Suas missões normais de casa estão ativas. Se for viajar, ative o protocolo abaixo.";
+        }
+
+        let bossAtivo = saveState.dungeons.some(d => d.tipo === 'invasao');
+        if(bossAtivo) {
+            document.body.classList.add('bloqueio-boss');
+            document.getElementById('dg-titulo-header').innerText = "🚨 INVASÃO DE CHEFE ATIVA!";
+        } else {
+            document.body.classList.remove('bloqueio-boss');
+            document.getElementById('dg-titulo-header').innerText = "👿 Dungeon Semanal / Bosses";
+        }
+
+        const dt = document.getElementById('display-tempo'); dt.innerText = saveState.jogador.tempoJogo + "H";
+        if(saveState.jogador.tempoJogo < 0) dt.className = "gt-hours devedor"; else dt.className = "gt-hours";
+
+        for (let attr in saveState.atributos) {
+            const el = document.getElementById(`stat-${attr.toLowerCase()}`);
+            if(el) el.innerText = saveState.atributos[attr];
+        }
+
+        const pMaldicoes = document.getElementById('painel-maldicoes');
+        const lMaldicoes = document.getElementById('lista-maldicoes');
+        lMaldicoes.innerHTML = '';
+        if(saveState.maldicoes && saveState.maldicoes.length > 0) {
+            pMaldicoes.style.display = 'block';
+            saveState.maldicoes.forEach(c => {
+                const item = document.createElement('div'); item.className = 'curse-item';
+                item.innerText = c === "Letargia Crônica" ? "⚠️ Letargia Crônica: XP ganho cortado em 50%" : "⚠️ Vulnerabilidade Psíquica: -2 SAB / -2 INT ativos";
+                lMaldicoes.appendChild(item);
+            });
+        } else { pMaldicoes.style.display = 'none'; }
+
+        const boxUrgente = document.getElementById('box-missao-urgente');
+        if(saveState.missaoUrgenteAtiva) {
+            boxUrgente.innerText = `🚨 ALVO IMEDIATO: ${saveState.missaoUrgenteAtiva}`;
+            boxUrgente.style.display = 'block';
+            document.getElementById('btn-gerar-urgente').style.display = 'none';
+            document.getElementById('btn-concluir-urgente').style.display = 'inline-block';
+        } else {
+            boxUrgente.style.display = 'none';
+            document.getElementById('btn-gerar-urgente').style.display = 'inline-block';
+            document.getElementById('btn-concluir-urgente').style.display = 'none';
+        }
+
+        document.getElementById('gold-saldo').innerText = `R$ ${(saveState.financeiro.saldo || 0).toFixed(2)}`;
+        document.getElementById('streak-sono').innerText = `🛌 Sono: ${saveState.streaks.sono || 0}d`;
+        document.getElementById('streak-treino').innerText = `🏋️ Treino: ${saveState.streaks.treino || 0}d`;
+        document.getElementById('streak-mente').innerText = `🛡️ Ilusão: ${saveState.streaks.mente || 0}d`;
+
+        const listaM = document.getElementById('lista-missoes'); listaM.innerHTML = '';
+        bancoMissoes.filter(m => m.dias.includes(dia)).forEach(m => {
+            const chave = `${dia}_${m.id}`; const eq = saveState.statusQuests[chave];
+            const li = document.createElement('li'); li.className = `mission-item ${eq ? eq.status : ''}`;
+            
+            let mult = m.comboKey && saveState.streaks[m.comboKey] >= 3 ? m.xp * 2 : m.xp;
+            let displayXp = saveState.maldicoes.includes("Letargia Crônica") ? Math.floor(mult / 2) : mult;
+
+            let textoMissaoFinal = saveState.modoViagemAtivo ? (m.textoContingencia || m.texto) : m.texto;
+
+            let h = `
+                <div class="mission-header">
+                    <span class="mission-text-span" style="${saveState.modoViagemAtivo ? 'color: var(--contingency-color);' : ''}">${textoMissaoFinal} ${m.comboKey && saveState.streaks[m.comboKey] >= 3 ? '🔥 (X2)' : ''}</span>
+                    <div class="badge-container">
+                        <span class="stat-badge">+1 ${m.attr}</span><span class="xp-badge">+${displayXp} XP</span>
+                        ${!eq ? `<button class="btn-fail" onclick="punirQuest(${m.id})">💣 FALHEI</button>` : ''}
+                    </div>
+                </div>
+            `;
+            if(!eq) {
+                if(!m.tipo || m.tipo === 'normal') h += `<div class="evidence-box"><input type="text" class="input-full" id="input-${m.id}" placeholder="${m.placeholder}"><button onclick="validarNormal(${m.id}, ${mult}, '${m.attr}', ${m.moral})">Provar</button></div>`;
+                else h += `<div class="evidence-box"><input type="text" id="marcador-${m.id}" placeholder="${m.placeholderMarcador}"><textarea id="resumo-${m.id}" placeholder="${m.placeholderResumo}"></textarea><button onclick="validarLeitura(${m.id}, ${mult}, '${m.attr}', ${m.moral})">Provar Leitura</button></div>`;
+            } else {
+                h += eq.status === 'concluida' ? `<div class="evidence-log">🔒 Validado: ${typeof eq.dados === 'object' ? eq.dados.marcador : eq.dados}</div>` : `<div class="penalty-log">💀 Fracassou</div>`;
+            }
+            li.innerHTML = h; listaM.appendChild(li);
+        });
+
+        // RENDERIZAÇÃO E ATUALIZAÇÃO DO FILTRO DE 100 CONQUISTAS
+        const gridA = document.getElementById('grid-achievements'); gridA.innerHTML = '';
+        let countDesbloqueadas = 0;
+        bancoConquistas.forEach(c => {
+            const unlocked = (saveState.conquistasDesbloqueadas || []).includes(c.id);
+            if(unlocked) countDesbloqueadas++;
+            const div = document.createElement('div'); div.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+            div.innerHTML = `<div class="achievement-info"><h4>${c.titulo}</h4><p>${c.desc}</p></div><div class="achievement-status">${unlocked ? '🏆 Aberto' : '🔒 Faltando'}</div>`;
+            gridA.appendChild(div);
+        });
+        document.getElementById('achievements-totalizer').innerText = `Desbloqueado: ${countDesbloqueadas} / 100 Conquistas`;
+
+        const gridD = document.getElementById('grid-dungeons'); gridD.innerHTML = '';
+        saveState.dungeons.forEach(d => {
+            const div = document.createElement('div'); div.className = `dg-card ${d.tipo === 'invasao' ? 'boss-invasao' : ''}`;
+            div.innerHTML = `<div class="dg-header"><span>${d.tipo === 'invasao' ? '🚨' : '👿'} ${d.nome}</span></div><div style="display:flex; gap:5px; margin-top:8px;"><button class="btn-main" style="background-color:var(--success); font-size:0.75rem; padding:5px;" onclick="vencerDungeon(${d.id})">Venci ⚔️</button><button class="btn-main" style="background-color:var(--danger); font-size:0.75rem; padding:5px;" onclick="falharDungeon(${d.id})">Fui Derrotado 💀</button></div>`;
+            gridD.appendChild(div);
+        });
+
+        const gridL = document.getElementById('grid-loots'); gridL.innerHTML = '';
+        saveState.metasLoot.forEach(l => {
+            let pct = Math.min(((saveState.financeiro.saldo || 0) / l.valor) * 100, 100);
+            const div = document.createElement('div'); div.className = 'loot-card';
+            div.innerHTML = `<div class="loot-info"><span>📦 ${l.nome}</span><span>R$ ${(saveState.financeiro.saldo||0).toFixed(0)} / R$ ${l.valor}</span></div><div class="loot-progress-container"><div class="loot-progress-bar" style="width:${pct}%"></div></div><button class="btn-buy-loot" ${pct>=100?'':'disabled'} onclick="adquirirLoot(${l.id}, ${l.valor})">Confirmar Compra Real 🏆</button>`;
+            gridL.appendChild(div);
+        });
+
+        const gridC = document.getElementById('grid-contratos'); gridC.innerHTML = '';
+        saveState.contratos.forEach(c => {
+            const div = document.createElement('div'); div.className = 'dg-card'; div.style.borderColor = "var(--warning)";
+            div.innerHTML = `<div class="dg-header"><span>🤝 Contrato: ${c.fiscal}</span></div><p style="font-size:0.8rem; margin:4px 0;"><b>Missão:</b> ${c.missao}<br><b>Fiança/Castigo:</b> ${c.multa}</p><div style="display:flex; gap:5px;"><button class="btn-main" style="background-color:var(--success); font-size:0.7er; padding:4px;" onclick="finalizarContrato(${c.id}, true)">Cumprido</button><button class="btn-main" style="background-color:var(--danger); font-size:0.7rem; padding:4px;" onclick="finalizarContrato(${c.id}, false)">Quebrei as Regras</button></div>`;
+            gridC.appendChild(div);
+        });
+
+        const gridS = document.getElementById('grid-skills'); gridS.innerHTML = '';
+        if(saveState.skills) {
+            saveState.skills.forEach(s => {
+                const div = document.createElement('div'); div.className = 'skill-card';
+                div.innerHTML = `<div class="skill-header"><span>🔮 ${s.nome}</span><span>Lvl ${s.nivel}</span></div><div class="skill-bar-container"><div class="skill-bar" style="width:${s.xp}%"></div></div><div class="skill-action"><input type="text" id="resumo-skill-${s.id}" placeholder="Resumo do estudo (15m)..."><button onclick="treinarSkill(${s.id})">Treinar</button></div>`;
+                gridS.appendChild(div);
+            });
+        }
+        
+        const gridP = document.getElementById('grid-platinas'); gridP.innerHTML = '';
+        saveState.jogosPlatinas.forEach(j => {
+            const div = document.createElement('div'); div.className = `game-card ${j.status==='Platinado'?'concluido':''}`;
+            div.innerHTML = `<div><h4>${j.nome}</h4><p>${j.status}</p></div><button style="background:none; border:none;" onclick="alternarStatusJogo(${j.id})"><span>${j.status==='Platinado'?'🏆':'⚔️'}</span></button>`;
+            gridP.appendChild(div);
+        });
+        const histD = document.getElementById('historico-diario'); histD.innerHTML = '';
+        saveState.diario.forEach(e => {
+            const div = document.createElement('div'); div.className = 'log-entry';
+            div.innerHTML = `<div class="log-date">📅 ${e.data}</div><div class="log-body">${e.texto}</div>`;
+            histD.appendChild(div);
+        });
+    }
+
+    atualizarInterface();
+</script>
+</body>
+</html>
