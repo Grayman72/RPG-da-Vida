@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG da Vida Real - Modo Solo v11.3</title>
+    <title>RPG da Vida Real - Modo Solo v12.0</title>
     <style>
         :root {
             --bg-color: #0d0d0f;
@@ -17,6 +17,7 @@
             --warning: #e1b12c;
             --curse-color: #a55eea;
             --contingency-color: #ff9f43;
+            --taverna-color: #ff7675;
         }
 
         body {
@@ -32,7 +33,6 @@
             box-sizing: border-box;
         }
 
-        /* AJUSTE CRÍTICO: Removido o limite estreito de largura e expandido para ocupar quase toda a tela */
         .container { 
             width: 100%; 
             max-width: 96%; 
@@ -81,7 +81,6 @@
             box-shadow: 0 0 10px rgba(255, 159, 67, 0.4);
         }
 
-        /* AJUSTE CRÍTICO: Grid esticando dinamicamente sem esmagar o conteúdo principal */
         .game-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -140,6 +139,7 @@
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .tab-btn { background-color: var(--card-bg); border: 1px solid #292930; color: var(--text-dark); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
         .tab-btn.active { background-color: var(--danger); color: white; border-color: var(--danger); }
+        .tab-btn.tab-taverna.active { background-color: var(--taverna-color); border-color: var(--taverna-color); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -210,15 +210,32 @@
         .btn-buy-loot { background-color: var(--success); border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; align-self: flex-end; }
         .btn-buy-loot:disabled { background-color: #292930; color: var(--text-dark); cursor: not-allowed; }
         
+        /* ESTILOS EXCLUSIVOS DO GRIMÓRIO v12 */
         .skills-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .skill-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid #292930; }
-        .skill-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+        .skill-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid #292930; position: relative; }
+        .skill-card.desequipada { opacity: 0.4; filter: grayscale(80%); }
+        .skill-card.desequipada .skill-action { display: none; }
+        .skill-badge-status { position: absolute; top: 12px; right: 12px; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        .skill-badge-status.eq { background-color: var(--success); color: #fff; }
+        .skill-badge-status.un { background-color: #292930; color: var(--text-dark); }
+        .skill-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; width: 80%; }
         .skill-bar-container { background: #0d0d0f; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
         .skill-bar { background: var(--info); height: 100%; width: 0%; transition: width 0.3s; }
         .skill-action { display: flex; gap: 5px; flex-wrap: wrap; }
         .skill-action input { flex: 1; min-width: 150px; font-size: 0.8rem; padding: 6px; }
         .skill-action button { background: #292930; border: 1px solid var(--info); color: var(--info); font-size: 0.8rem; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        
+        .btn-toggle-equip { background: none; border: 1px solid #444; color: var(--text); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-top: 5px; font-weight: bold; }
+        .btn-toggle-equip:hover { border-color: var(--primary); }
+        .slot-warning { background: #1a1412; border: 1px solid var(--warning); padding: 10px; border-radius: 6px; font-size: 0.85rem; color: var(--warning); margin-bottom: 15px; font-weight: bold; text-align: center; }
+
+        /* ESTILOS EXCLUSIVOS DA TAVERNA v12 */
+        .taverna-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .taverna-card { background: var(--card-bg); border: 1px solid #292930; border-left: 4px solid var(--taverna-color); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        .taverna-info h4 { margin: 0 0 4px 0; font-size: 1rem; color: #fff; }
+        .taverna-info p { margin: 0; font-size: 0.8rem; color: var(--text-dark); }
+        .btn-buy-taverna { background-color: var(--taverna-color); border: none; color: white; padding: 8px 14px; border-radius: 5px; font-weight: bold; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+        .btn-buy-taverna:disabled { background-color: #292930; color: var(--text-dark); cursor: not-allowed; }
+
         .platina-form { display: flex; flex-direction: column; gap: 10px; background-color: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #292930; }
         .platina-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
         .game-card { background-color: var(--card-bg); padding: 12px; border-radius: 8px; border-top: 3px solid var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
@@ -253,8 +270,8 @@
 
 <div class="container">
     <header>
-        <h1>RPG Solo — Modo Hardcore v11.3</h1>
-        <p style="color: var(--success); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; margin: 3px 0 0 0;">🔄 Reset Semanal Automático Ativo | 📖 Manual Incluso</p>
+        <h1>RPG Solo — Modo Hardcore v12.0</h1>
+        <p style="color: var(--success); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; margin: 3px 0 0 0;">🔄 Reset Semanal Ativo | 🍺 Mecânica da Taverna Operacional | 🔮 Slots de Grimório Ativos</p>
     </header>
 
     <div class="contingency-banner">
@@ -307,13 +324,14 @@
             <div class="tabs">
                 <button class="tab-btn active" onclick="trocarAaba('quests')" id="tab-quests">⚔️ Quests</button>
                 <button class="tab-btn" onclick="trocarAaba('foco')" id="tab-foco">🧪 Foco</button>
+                <button class="tab-btn tab-taverna" onclick="trocarAaba('taverna')" id="tab-taverna">🍺 Taverna</button>
                 <button class="tab-btn" onclick="trocarAaba('achievements')" id="tab-achievements">🏆 Conquistas</button>
                 <button class="tab-btn" onclick="trocarAaba('tesouraria')" id="tab-tesouraria">💰 Tesouraria</button>
                 <button class="tab-btn" onclick="trocarAaba('mercenarios')" id="tab-mercenarios">🤝 Mercenários</button>
                 <button class="tab-btn" onclick="trocarAaba('skills')" id="tab-skills">📜 Grimório</button>
                 <button class="tab-btn" onclick="trocarAaba('platinas')" id="tab-platinas">🎮 Platinas</button>
                 <button class="tab-btn" onclick="trocarAaba('dicionario')" id="tab-dicionario">📖 Diário</button>
-                <button class="tab-btn" onclick="trocarAaba('guia')" id="tab-guia" style="color: var(--info);">❓ Guia das Abas</button>
+                <button class="tab-btn" onclick="trocarAaba('guia')" id="tab-guia" style="color: var(--info);">❓ Guia</button>
             </div>
 
             <div id="content-quests" class="tab-content active">
@@ -369,6 +387,22 @@
                 </div>
             </div>
 
+            <div id="content-taverna" class="tab-content">
+                <div class="section-title">🍺 Menu de Descanso Alinhado (Trocar Game Time por Lazer)</div>
+                <p style="color: var(--text-dark); font-size: 0.85rem; margin-top: -5px; margin-bottom: 15px;">Gaste suas horas acumuladas de Game Time com luxos legítimos na vida real. Sem culpa.</p>
+                
+                <div class="platina-form" style="margin-bottom: 20px;">
+                    <span style="font-size: 0.85rem; font-weight: bold; color: var(--taverna-color);">➕ Criar Luxo Personalizado</span>
+                    <div style="display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap;">
+                        <input type="text" id="taverna-nome" placeholder="Ex: Ir ao shopping, Comer Hamburguer..." style="flex: 2; min-width: 200px;">
+                        <input type="number" id="taverna-custo" placeholder="Custo em Horas" style="flex: 1; min-width: 100px;">
+                        <button class="btn-main" onclick="adicionarItemTaverna()" style="background-color: var(--taverna-color);">Adicionar ao Menu</button>
+                    </div>
+                </div>
+
+                <div class="taverna-grid" id="grid-taverna"></div>
+            </div>
+
             <div id="content-achievements" class="tab-content">
                 <div class="section-title">🏆 Quadro de Proezas de Longo Prazo</div>
                 <div class="achievements-stats-header" id="achievements-totalizer">Desbloqueado: 0 / 100 Conquistas</div>
@@ -411,11 +445,12 @@
 
             <div id="content-skills" class="tab-content">
                 <div class="section-title">🔮 Forjar Nova Perícia</div>
-                <div class="skill-form">
-                    <input type="text" id="skill-nome" placeholder="Ex: Estudo de Caso X, Oratória...">
-                    <button class="btn-main" onclick="adicionarSkill()">Criar Perícia</button>
+                <div class="slot-warning" id="slot-contador-warning">Slots Equipados: 0 / 3 Ativos</div>
+                <div class="platina-form">
+                    <input type="text" id="skill-nome" placeholder="Ex: Estudo de Caso X, Oratória, Programação...">
+                    <button class="btn-main" onclick="adicionarSkill()">Criar Perícia na Biblioteca</button>
                 </div>
-                <div class="section-title">Suas Maestrias</div>
+                <div class="section-title">Biblioteca de Maestrias (Máximo 3 Equipadas ao mesmo tempo)</div>
                 <div class="skills-grid" id="grid-skills"></div>
             </div>
 
@@ -445,47 +480,32 @@
 
             <div id="content-guia" class="tab-content">
                 <div class="guide-container">
-                    <h2 style="color: #fff; margin-top: 0; font-size: 1.3rem; border-bottom: 2px solid var(--primary); padding-bottom: 5px;">📖 Manual Operacional do Grimório</h2>
+                    <h2 style="color: #fff; margin-top: 0; font-size: 1.3rem; border-bottom: 2px solid var(--primary); padding-bottom: 5px;">协助 Manual Operacional do Grimório</h2>
                     <p class="guide-p">Bem-vindo ao centro de informações. Aqui está a descrição e a utilidade exata de cada aba do seu painel de jogo para ajudá-lo a gerenciar a sua jornada:</p>
                     
                     <div class="guide-section">
                         <div class="guide-title">⚔️ Quests</div>
-                        <p class="guide-p">O coração do seu dia a dia. Aqui você valida suas obrigações diárias enviando provas textuais reais para ganhar XP, atributos e <strong>Game Time</strong>. Se falhar, você é punido. Também abriga o <strong>Comando Relâmpago</strong> (para quebrar a inércia em 15 minutos) e o painel de <strong>Bosses/Dungeons</strong> (grandes pendências da vida real que bloqueiam sua diversão até serem resolvidas).</p>
+                        <p class="guide-p">O coração do seu dia a dia. Aqui você valida suas obrigações diárias enviando provas textuais reais para ganhar XP, atributos e <strong>Game Time</strong>. Se falhar, você é punido.</p>
                     </div>
 
                     <div class="guide-section">
                         <div class="guide-title">🧪 Foco</div>
-                        <p class="guide-p">Um laboratório Pomodoro de 25 minutos. Ao manter o foco total até o timer zerar, você destila uma <strong>Poção de Concentração</strong>. Essa poção pode ser guardada no inventário e bebida quando você quiser para injetar instantaneamente <strong>+1 Hora de Game Time legítima</strong> no seu painel.</p>
+                        <p class="guide-p">Um laboratório Pomodoro de 25 minutos. Ao manter o foco total até o timer zerar, você destila uma <strong>Poção de Concentração</strong> que injeta <strong>+1 Hora de Game Time legítima</strong> no seu painel.</p>
                     </div>
 
                     <div class="guide-section">
-                        <div class="guide-title">🏆 Conquistas</div>
-                        <p class="guide-p">O painel com os <strong>100 desafios automáticos</strong>. Ele monitora constantemente o seu progresso total em segundo plano. À medida que você sobe de nível, acumula horas de jogo, junta dinheiro ou acumula dias seguidos sem falhar (streaks), os troféus de Bronze, Prata, Ouro, Platina e Diamante se destrancam sozinhos.</p>
+                        <div class="guide-title">🍺 Taverna</div>
+                        <p class="guide-p">O menu de <strong>Descanso Alinhado</strong>. Transforma suas horas acumuladas de Game Time em uma moeda global de liberdade. Você pode gastar as horas para assistir episódios, comer refeições livres ou tirar blocos de ócio sem peso na consciência.</p>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-title">📜 Grimório (Skills)</div>
+                        <p class="guide-p">Acompanhamento de estudos profundos. Na versão v12.0, você só pode ter **3 Perícias Equipadas** por semana. Apenas perícias marcadas como equipadas exibem o formulário para receber treino e subir o seu nível de Inteligência (INT).</p>
                     </div>
 
                     <div class="guide-section">
                         <div class="guide-title">💰 Tesouraria</div>
-                        <p class="guide-p">Onde a sua vida financeira se choca com o game. Você registra o saldo real da sua conta bancária e cadastra <strong>Loots</strong> (coisas caras que você quer comprar, como uma placa de vídeo ou tênis). O jogo calcula o progresso e só libera a compra quando você tiver dinheiro físico. Comprar um item por aqui valida o uso do dinheiro e te recompensa com bônus massivos de XP e atributos.</p>
-                    </div>
-
-                    <div class="guide-section">
-                        <div class="guide-title">🤝 Mercenários</div>
-                        <p class="guide-p">Contratos de prestação de contas com terceiros. Se você tem dificuldade de cumprir algo sozinho, você assina um contrato colocando um amigo, namorada ou familiar como <strong>Fiscal</strong>. Você define a missão e a <strong>multa/castigo real</strong> se falhar. O medo de pagar a multa te força a agir.</p>
-                    </div>
-
-                    <div class="guide-section">
-                        <div class="guide-title">📜 Grimório</div>
-                        <p class="guide-p">O local para criar e monitorar suas soft skills e estudos de longo prazo (ex: aprender inglês, programar, oratória). Cada vez que estuda e envia um resumo, a perícia ganha experiência separada. Ao subir o nível de uma perícia, você ganha pontos permanentes de Inteligência (INT).</p>
-                    </div>
-
-                    <div class="guide-section">
-                        <div class="guide-title">🎮 Platinas</div>
-                        <p class="guide-p">O seu gerenciador de lazer. Liste os jogos eletrônicos ou hobbies que você está jogando na vida real para acompanhar o status de progresso deles e gerenciar sua lista de metas de entretenimento.</p>
-                    </div>
-
-                    <div class="guide-section">
-                        <div class="guide-title">📖 Diário</div>
-                        <p class="guide-p">Um espaço seguro e criptografado localmente para desabafos, revisões semanais e anotações mentais sobre seus pontos de melhoria. Escreva e tranque as páginas para criar um histórico da sua evolução mental.</p>
+                        <p class="guide-p">Onde a sua vida financeira se choca com o game. Cadastre <strong>Loots</strong> (coisas caras que você quer comprar). O jogo calcula o progresso e valida a compra gerando bônus massivos quando você tem o dinheiro real.</p>
                     </div>
                 </div>
             </div>
@@ -495,7 +515,7 @@
 </div>
 
 <script>
-    let saveState = JSON.parse(localStorage.getItem('rpg_solo_v11_0')) || {
+    let saveState = JSON.parse(localStorage.getItem('rpg_solo_v12_0')) || {
         jogador: { xp: 0, nivel: 1, tempoJogo: 0, potions: 0, moral: 50 },
         atributos: { FOR: 10, INT: 10, SAB: 10, CAR: 10, DES: 10 }, 
         statusQuests: {}, 
@@ -504,6 +524,7 @@
         jogosPlatinas: [],
         diario: [],
         skills: [],
+        itemsTaverna: [],
         streaks: { sono: 0, treino: 0, mente: 0 },
         financeiro: { saldo: 0 },
         metasLoot: [],
@@ -517,114 +538,31 @@
     };
 
     const bancoMissoes = [
-        { 
-            id: 12, attr: "DES", comboKey: "sono", moral: 2, 
-            texto: "Sono: Dormir antes de 1H and acordar até as 7H", 
-            textoContingencia: "⛺ Sono na Estrada: Dormir antes de 1H30 e manter o despertador regulado",
-            xp: 45, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Horário real registrado?" 
-        },
-        { 
-            id: 13, attr: "CAR", tipo: "normal", moral: 1, 
-            texto: "🗣️ O Treino do Bardo: Ler 3 min em voz alta, postura firme", 
-            textoContingencia: "📱 Comunicação Móvel: Enviar um áudio explicativo limpo, articulado e sem gírias",
-            xp: 30, pXp: 15, pTempo: 0, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a dicção?" 
-        },
-        { 
-            id: 1, attr: "CAR", tipo: "normal", moral: 1, 
-            texto: "Higiene: Rotina completa de cuidados + Organização pessoal", 
-            textoContingencia: "🧳 Aparência Externa: Cuidar impecavelmente da vestimenta e apresentação na viagem",
-            xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme os cuidados." 
-        },
-        { 
-            id: 7, attr: "DES", tipo: "normal", moral: 1, 
-            texto: "Ambiente: Arrumar totalmente o quarto e espaço de trabalho", 
-            textoContingencia: "🧳 Inventário Alinhado: Arrumar e fechar a mala perfeitamente (zero bagunça espalhada)",
-            xp: 25, pXp: 20, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado"], placeholder: "O que organizou na acomodação?" 
-        },
-        { 
-            id: 8, attr: "DES", tipo: "normal", moral: 1, 
-            texto: "Ambiente: Limpar louça e pendências domésticas", 
-            textoContingencia: "📱 Filtro Digital: Limpar notificações, e-mails retidos e a Área de Trabalho do notebook",
-            xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme a higienização virtual." 
-        },
-        { 
-            id: 2, attr: "CAR", tipo: "normal", moral: 3, 
-            texto: "💖 Romance: Dedicar atenção focada (Presença Real)", 
-            textoContingencia: "💖 Conexão de Longa Distância: Uma ligação ou chamada de vídeo focada de 15 minutos",
-            xp: 25, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a interação remota?" 
-        },
-        { 
-            id: 16, attr: "CAR", tipo: "normal", moral: 4, 
-            texto: "🌹 Gestos de Carinho: Fazer uma surpresa real para ela (Escrever carta física, entregar flores, chocolate etc)", 
-            textoContingencia: "📱 Afeto Conectado: Enviar uma mensagem especial de admiração surpresa ou planejar um encontro futuro",
-            xp: 40, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "O que você realizou hoje de surpresa?" 
-        },
-        { 
-            id: 17, attr: "SAB", tipo: "normal", moral: 3,
-            texto: "🗺️ Alinhamento de Linha do Tempo: Sentar por 15 min com ela para alinhar a agenda e planos da semana",
-            textoContingencia: "📱 Sincronia Remota: Alinhar por chamada de áudio os dias livres e compromissos mútuos da semana",
-            xp: 35, pXp: 15, pTempo: 1, dias: ["Domingo"], placeholder: "O que alinharam para os próximos dias?"
-        },
-        { 
-            id: 14, attr: "CAR", tipo: "normal", moral: 3, 
-            texto: "🛡️ Quest de Clã: Convivência familiar de 20 min totalmente sem telas", 
-            textoContingencia: "🛡️ Reporte de Expedição: Dar um retorno calmo e atencioso para os familiares sobre como você está",
-            xp: 35, pXp: 15, pTempo: 1, dias: ["Sábado", "Domingo"], placeholder: "Com quem falou?" 
-        },
-        { 
-            id: 18, attr: "DES", tipo: "normal", moral: 2,
-            texto: "🛠️ Auxílio aos Aliados: Prestar um favor proativo para alguém da família sem que peçam (limpeza, conserto, etc)",
-            textoContingencia: "📦 Suporte Remoto: Resolver um problem digital, burocrático ou dar um suporte urgente à distância para a família",
-            xp: 30, pXp: 15, pTempo: 0, dias: ["Quarta", "Sábado"], placeholder: "Qual foi o ato de suporte realizado?"
-        },
-        { 
-            id: 11, attr: "SAB", tipo: "normal", moral: 4, 
-            texto: "Espiritual: Frequentar templo/igreja ou assistir celebração", 
-            textoContingencia: "🎧 Alimento de Campanha: Assistir a um sermão/palestra espiritual em formato de áudio/vídeo completo",
-            xp: 60, pXp: 30, pTempo: 0, dias: ["Domingo"], placeholder: "Mencione a reflexão central." 
-        },
-        { 
-            id: 9, attr: "SAB", tipo: "leitura", moral: 3, 
-            texto: "Espiritual: Leitura e estudo de escrituras sagradas em casa", 
-            textoContingencia: "📖 Escrituras em Trânsito: Estudo de 1 capítulo pelo aplicativo de celular ou livro físico de bolso",
-            xp: 45, pXp: 20, pTempo: 0, dias: ["Segunda", "Quarta", "Sexta", "Domingo"], placeholderMarcador: "Trecho lido?", placeholderResumo: "Ideia retida no deslocamento..." 
-        },
-        { 
-            id: 10, attr: "INT", tipo: "leitura", moral: 2, 
-            texto: "Intelectual: Avançar páginas de livro de desenvolvimento", 
-            textoContingencia: "📱 Leitura Mobile: Ler 10 minutos de um PDF ou e-book técnico/acadêmico no celular",
-            xp: 45, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholderMarcador: "Seção lida?", placeholderResumo: "Resumo em uma frase..." 
-        },
-        { 
-            id: 3, attr: "INT", tipo: "normal", moral: 2, 
-            texto: "Acadêmico: Estudar 15 min ou adiantar prazos da faculdade", 
-            textoContingencia: "📝 Mapeamento de Cronograma: Revisar e atualizar as datas e prazos de entregas no portal acadêmico",
-            xp: 40, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Quais prazos mapeou hoje?" 
-        },
-        { 
-            id: 19, attr: "CAR", tipo: "normal", moral: 2,
-            texto: "🎓 Aliança Científica: Fazer uma pergunta relevante em aula ou tirar uma dúvida crítica com o professor/colega",
-            textoContingencia: "💬 Networking Acadêmico: Responder/ajudar alguém no grupo de estudos ou mandar e-mail sobre projetos",
-            xp: 30, pXp: 15, pTempo: 0, dias: ["Terça", "Quinta"], placeholder: "Qual foi a dúvida levantada ou interação feita?"
-        },
-        { 
-            id: 4, attr: "FOR", comboKey: "treino", moral: 2, tipo: "normal", 
-            texto: "Condicionamento Físico: Musculação ou treino de alta intensidade", 
-            textoContingencia: "🏃‍♂️ Exploração de Terreno: Bater 7.000 passos no dia (caminhada) OU 15 min de calistenia no hotel",
-            xp: 50, pXp: 25, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "Relatório de passos ou repetições?" 
-        },
-        { 
-            id: 5, attr: "SAB", comboKey: "mente", moral: 5, tipo: "normal", 
-            texto: "Resistência à Ilusão (Gatils): Blindar o foco contra dopamina artificial", 
-            textoContingencia: "🛡️ Resistência em Zona Hostil (Gatils): Foco intocado em ambiente externo (Quarto de hotel, aeroporto ou tédio)",
-            xp: 60, pXp: 50, pTempo: 2, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Como blindou seu foco fora da sua zona protegida?" 
-        },
-        { 
-            id: 6, attr: "DES", tipo: "normal", moral: 2, 
-            texto: "Frugalidade: Controlar impulsos e encerrar o dia com zero gastos desnecessários", 
-            textoContingencia: "🪙 Controle de Diárias: Limitar-se rigorosamente apenas aos gastos básicos de alimentação e transporte necessários",
-            xp: 35, pXp: 25, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme o controle de caixa na estrada." 
-        }
+        { id: 12, attr: "DES", comboKey: "sono", moral: 2, texto: "Sono: Dormir antes de 1H and acordar até as 7H", textoContingencia: "⛺ Sono na Estrada: Dormir antes de 1H30 e manter o despertador regulado", xp: 45, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Horário real registrado?" },
+        { id: 13, attr: "CAR", tipo: "normal", moral: 1, texto: "🗣️ O Treino do Bardo: Ler 3 min em voz alta, postura firme", textoContingencia: "📱 Comunicação Móvel: Enviar um áudio explicativo limpo, articulado e sem gírias", xp: 30, pXp: 15, pTempo: 0, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a dicção?" },
+        { id: 1, attr: "CAR", tipo: "normal", moral: 1, texto: "Higiene: Rotina completa de cuidados + Organização pessoal", textoContingencia: "🧳 Aparência Externa: Cuidar impecavelmente da vestimenta e apresentação na viagem", xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme os cuidados." },
+        { id: 7, attr: "DES", tipo: "normal", moral: 1, texto: "Ambiente: Arrumar totalmente o quarto e espaço de trabalho", textoContingencia: "🧳 Inventário Alinhado: Arrumar e fechar a mala perfeitamente (zero bagunça espalhada)", xp: 25, pXp: 20, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado"], placeholder: "O que organizou na acomodação?" },
+        { id: 8, attr: "DES", tipo: "normal", moral: 1, texto: "Ambiente: Limpar louça e pendências domésticas", textoContingencia: "📱 Filtro Digital: Limpar notificações, e-mails retidos e a Área de Trabalho do notebook", xp: 20, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme a higienização virtual." },
+        { id: 2, attr: "CAR", tipo: "normal", moral: 3, texto: "💖 Romance: Dedicar atenção focada (Presença Real)", textoContingencia: "💖 Conexão de Longa Distância: Uma ligação ou chamada de vídeo focada de 15 minutos", xp: 25, pXp: 15, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Como foi a interação remota?" },
+        { id: 16, attr: "CAR", tipo: "normal", moral: 4, texto: "🌹 Gestos de Carinho: Fazer uma surpresa real para ela (Escrever carta física, entregar flores, chocolate etc)", textoContingencia: "📱 Afeto Conectado: Enviar uma mensagem especial de admiração surpresa ou planejar um encontro futuro", xp: 40, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "O que você realizou hoje de surpresa?" },
+        { id: 17, attr: "SAB", tipo: "normal", moral: 3, texto: "🗺️ Alinhamento de Linha do Tempo: Sentar por 15 min com ela para alinhar a agenda e planos da semana", textoContingencia: "📱 Sincronia Remota: Alinhar por chamada de áudio os dias livres e compromissos mútuos da semana", xp: 35, pXp: 15, pTempo: 1, dias: ["Domingo"], placeholder: "O que alinharam para os próximos dias?" },
+        { id: 14, attr: "CAR", tipo: "normal", moral: 3, texto: "🛡️ Quest de Clã: Convivência familiar de 20 min totalmente sem telas", textoContingencia: "🛡️ Reporte de Expedição: Dar um retorno calmo e atencioso para os familiares sobre como você está", xp: 35, pXp: 15, pTempo: 1, dias: ["Sábado", "Domingo"], placeholder: "Com quem falou?" },
+        { id: 18, attr: "DES", tipo: "normal", moral: 2, texto: "🛠️ Auxílio aos Aliados: Prestar um favor proativo para alguém da família sem que peçam (limpeza, conserto, etc)", textoContingencia: "📦 Suporte Remoto: Resolver um problem digital, burocrático ou dar um suporte urgente à distância para a família", xp: 30, pXp: 15, pTempo: 0, dias: ["Quarta", "Sábado"], placeholder: "Qual foi o ato de suporte realizado?" },
+        { id: 11, attr: "SAB", tipo: "normal", moral: 4, texto: "Espiritual: Frequentar templo/igreja ou assistir celebração", textoContingencia: "🎧 Alimento de Campanha: Assistir a um sermão/palestra espiritual em formato de áudio/vídeo completo", xp: 60, pXp: 30, pTempo: 0, dias: ["Domingo"], placeholder: "Mencione a reflexão central." },
+        { id: 9, attr: "SAB", tipo: "leitura", moral: 3, texto: "Espiritual: Leitura e estudo de escrituras sagradas em casa", textoContingencia: "📖 Escrituras em Trânsito: Estudo de 1 capítulo pelo aplicativo de celular ou livro físico de bolso", xp: 45, pXp: 20, pTempo: 0, dias: ["Segunda", "Quarta", "Sexta", "Domingo"], placeholderMarcador: "Trecho lido?", placeholderResumo: "Ideia retida no deslocamento..." },
+        { id: 10, attr: "INT", tipo: "leitura", moral: 2, texto: "Intelectual: Avançar páginas de livro de desenvolvimento", textoContingencia: "📱 Leitura Mobile: Ler 10 minutos de um PDF ou e-book técnico/acadêmico no celular", xp: 45, pXp: 20, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholderMarcador: "Seção lida?", placeholderResumo: "Resumo em uma frase..." },
+        { id: 3, attr: "INT", tipo: "normal", moral: 2, texto: "Acadêmico: Estudar 15 min ou adiantar prazos da faculdade", textoContingencia: "📝 Mapeamento de Cronograma: Revisar e atualizar as datas e prazos de entregas no portal acadêmico", xp: 40, pXp: 25, pTempo: 1, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"], placeholder: "Quais prazos mapeou hoje?" },
+        { id: 19, attr: "CAR", tipo: "normal", moral: 2, texto: "🎓 Aliança Científica: Fazer uma pergunta relevante em aula ou tirar uma dúvida crítica com o professor/colega", textoContingencia: "💬 Networking Acadêmico: Responder/ajudar alguém no grupo de estudos ou mandar e-mail sobre projetos", xp: 30, pXp: 15, pTempo: 0, dias: ["Terça", "Quinta"], placeholder: "Qual foi a dúvida levantada ou interação feita?" },
+        { id: 4, attr: "FOR", comboKey: "treino", moral: 2, tipo: "normal", texto: "Condicionamento Físico: Musculação ou treino de alta intensidade", textoContingencia: "🏃‍♂️ Exploração de Terreno: Bater 7.000 passos no dia (caminhada) OU 15 min de calistenia no hotel", xp: 50, pXp: 25, pTempo: 0, dias: ["Terça", "Quinta", "Sábado"], placeholder: "Relatório de passos ou repetições?" },
+        { id: 5, attr: "SAB", comboKey: "mente", moral: 5, tipo: "normal", texto: "Resistência à Ilusão (Gatils): Blindar o foco contra dopamina artificial", textoContingencia: "🛡️ Resistência em Zona Hostil (Gatils): Foco intocado em ambiente externo (Quarto de hotel, aeroporto ou tédio)", xp: 60, pXp: 50, pTempo: 2, dias: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], placeholder: "Como blindou seu foco fora da sua zona protegida?" },
+        { id: 6, attr: "DES", tipo: "normal", moral: 2, texto: "Frugalidade: Controlar impulsos e encerrar o dia com zero gastos desnecessários", textoContingencia: "🪙 Controle de Diárias: Limitar-se rigorosamente apenas aos gastos básicos de alimentação e transporte necessários", xp: 35, pXp: 25, pTempo: 1, dias: ["Segunda", "Quarta", "Sexta", "Sábado", "Domingo"], placeholder: "Confirme o controle de caixa na estrada." }
+    ];
+
+    const itensTavernaPadrao = [
+        { id: 't1', nome: "🎬 Ingresso de Cinema em Casa", desc: "Assistir a um episódio de série ou um filme completo sem culpa.", custo: 2, tipo: 'fixo' },
+        { id: 't2', nome: "🍕 Banquete do Guerreiro", desc: "Comer uma refeição livre (fora da dieta/rotina) com aval do jogo.", custo: 4, tipo: 'fixo' },
+        { id: 't3', nome: "💤 Descanso do Herói", desc: "Uma tarde ou bloco de 4 horas de ócio absoluto (redes sociais, deitar) sem peso na consciência.", custo: 5, tipo: 'fixo' },
+        { id: 't4', nome: "📱 Pergaminho da Distração", desc: "Liberar 30 minutos extras de vídeos aleatórios ou feeds no meio do dia.", custo: 1, tipo: 'fixo' }
     ];
 
     const poolUrgentes = [
@@ -659,18 +597,14 @@
             if(cat.prefixo === "str") desc = `Somar ${marco} dias totais juntando as correntes de Sono, Treino e Ilusão.`;
             if(cat.prefixo === "skl") desc = `Desbloquear ou elevar Perícias ${marco} vezes no Grimório.`;
 
-            bancoConquistas.push({
-                id: `${cat.prefixo}_${marco}`,
-                titulo: `${cat.nome} — [${marco}]`,
-                desc: `${medalha}: ${desc}`
-            });
+            bancoConquistas.push({ id: `${cat.prefixo}_${marco}`, titulo: `${cat.nome} — [${marco}]`, desc: `${medalha}: ${desc}` });
         });
     });
 
     let timerInterval = null;
     let timerSegundos = 1500;
 
-    function salvar() { localStorage.setItem('rpg_solo_v11_0', JSON.stringify(saveState)); }
+    function salvar() { localStorage.setItem('rpg_solo_v12_0', JSON.stringify(saveState)); }
 
     function checarEExecutarResetSemanalAutomatico() {
         const agora = new Date();
@@ -682,20 +616,22 @@
         if (saveState.numeroSemanaAtual !== chaveSemanaUnica) {
             saveState.statusQuests = {};
             saveState.numeroSemanaAtual = chaveSemanaUnica;
+            
+            // MECÂNICA v12.0: Desequipar todas as skills no reset semanal para forçar escolha
+            if(saveState.skills) {
+                saveState.skills.forEach(s => s.equipada = false);
+            }
+            
             salvar();
-            console.log("🔄 Reset Semanal Executado Automaticamente!");
+            console.log("🔄 Reset Semanal Executado Automaticamente! Skills guardadas na biblioteca.");
         }
     }
 
     function alternarModoViagem() {
         saveState.modoViagemAtivo = !saveState.modoViagemAtivo;
-        if(saveState.modoViagemAtivo) {
-            alert("⛺ PROTOCOLO DE CONTINGÊNCIA ATIVADO!");
-        } else {
-            alert("🏠 RETORNO À BASE OPERACIONAL!");
-        }
-        salvar();
-        atualizarInterface();
+        if(saveState.modoViagemAtivo) alert("⛺ PROTOCOLO DE CONTINGÊNCIA ATIVADO!");
+        else alert("🏠 RETORNO À BASE OPERACIONAL!");
+        salvar(); atualizarInterface();
     }
 
     function exportarSave() {
@@ -710,6 +646,7 @@
         if (!cod) return;
         try {
             saveState = JSON.parse(decodeURIComponent(escape(atob(cod.trim()))));
+            if(!saveState.itemsTaverna) saveState.itemsTaverna = [];
             salvar(); verificarConquistas(); checarEExecutarResetSemanalAutomatico(); atualizarInterface(); alert("Save carregado!");
         } catch(e) { alert("Código corrompido."); }
     }
@@ -726,19 +663,13 @@
     function definirDiaAtualAutomatico() {
         const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
         const hoje = diasSemana[new Date().getDay()];
-        if(!localStorage.getItem('rpg_solo_v11_0')) {
-            saveState.diaSelecionado = hoje;
-        }
+        if(!localStorage.getItem('rpg_solo_v12_0')) { saveState.diaSelecionado = hoje; }
     }
 
     function gastarHora() {
-        if(document.body.classList.contains('bloqueio-boss')) {
-            return alert("⛔ ACESSO RESTRITO! Resolva as obrigações pendentes!");
-        }
+        if(document.body.classList.contains('bloqueio-boss')) return alert("⛔ ACESSO RESTRITO! Resolva as obrigações pendentes!");
         saveState.jogador.tempoJogo--;
-        verificarConquistas();
-        salvar(); 
-        atualizarInterface();
+        verificarConquistas(); salvar(); atualizarInterface();
     }
 
     function gerarMissaoUrgente() {
@@ -782,8 +713,7 @@
         saveState.jogador.xp += ganhoXp;
         saveState.jogador.tempoJogo += 5;
         saveState.atributos.CAR += 3;
-        adjustMoral(10);
-        checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("🏆 Compra chancelada!");
+        adjustMoral(10); checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("🏆 Compra chancelada!");
     }
 
     function controlarTimer() {
@@ -817,8 +747,7 @@
         if((saveState.jogador.potions || 0) <= 0) return alert("Estoque vazio.");
         saveState.jogador.potions--;
         if(tipo === 'tempo') saveState.jogador.tempoJogo += 1;
-        verificarConquistas();
-        salvar(); atualizarInterface();
+        verificarConquistas(); salvar(); atualizarInterface();
     }
 
     function adicionarDungeon() {
@@ -841,8 +770,7 @@
     function falharDungeon(id) {
         saveState.dungeons = saveState.dungeons.filter(d => d.id !== id);
         saveState.jogador.tempoJogo -= 4;
-        adjustMoral(-10);
-        checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("💀 Você recuou.");
+        adjustMoral(-10); checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface(); alert("💀 Você recuou.");
     }
 
     function checarInvasaoBoss() {
@@ -990,11 +918,29 @@
         concluirQuest(id, xp, attr, { marcador: m, resumo: r }, moral);
     }
 
+    /* MECÂNICAS v12.0: GRIMÓRIO COM SLOTS LIMITADOS */
     function adicionarSkill() {
         const inp = document.getElementById('skill-nome'); if(!inp.value.trim()) return;
         if(!saveState.skills) saveState.skills = [];
-        saveState.skills.push({ id: Date.now(), nome: inp.value.trim(), nivel: 1, xp: 0 });
+        saveState.skills.push({ id: Date.now(), nome: inp.value.trim(), nivel: 1, xp: 0, equipada: false });
         inp.value = ""; verificarConquistas(); salvar(); atualizarInterface();
+    }
+
+    function alternarEquipamentoSkill(id) {
+        if(!saveState.skills) return;
+        const s = saveState.skills.find(sk => sk.id === id);
+        if(!s) return;
+
+        if(!s.equipada) {
+            let equipadas = saveState.skills.filter(sk => sk.equipada).length;
+            if(equipadas >= 3) {
+                return alert("⛔ LIMITE DE SLOTS ATINGIDO!\n\nVocê só pode memorizar 3 habilidades por vez. Desequipe uma antes.");
+            }
+            s.equipada = true;
+        } else {
+            s.equipada = false;
+        }
+        salvar(); atualizarInterface();
     }
 
     function treinarSkill(id) {
@@ -1002,6 +948,7 @@
         if(res.length < 15) return alert("Falta profundidade.");
         const s = saveState.skills.find(sk => sk.id === id);
         if(s) {
+            if(!s.equipada) return alert("Esta skill não está equipada!");
             s.xp += 50; 
             let gXp = 15; if(saveState.maldicoes.includes("Letargia Crônica")) gXp = Math.floor(gXp / 2);
             saveState.jogador.xp += gXp;
@@ -1009,6 +956,38 @@
             document.getElementById(`resumo-skill-${id}`).value = "";
             checkLevelUp(); verificarConquistas(); salvar(); atualizarInterface();
         }
+    }
+
+    /* MECÂNICAS v12.0: TAVERNA (GASTAR TEMPO DE JOGO) */
+    function adicionarItemTaverna() {
+        const n = document.getElementById('taverna-nome').value.trim();
+        const c = parseInt(document.getElementById('taverna-custo').value);
+        if(!n || isNaN(c) || c <= 0) return alert("Parâmetros inválidos.");
+        if(!saveState.itemsTaverna) saveState.itemsTaverna = [];
+        saveState.itemsTaverna.push({ id: 'custom_' + Date.now(), nome: n, desc: "Luxo personalizado criado pelo jogador.", custo: c, tipo: 'custom' });
+        document.getElementById('taverna-nome').value = ""; document.getElementById('taverna-custo').value = "";
+        salvar(); atualizarInterface();
+    }
+
+    function consumirTaverna(custo, nome) {
+        if(document.body.classList.contains('bloqueio-boss')) return alert("⛔ ACESSO RESTRITO! Resolva as obrigações pendentes!");
+        if(saveState.jogador.tempoJogo < custo) return alert("⚠️ Tempo de Jogo Insuficiente! Vá cumprir quests!");
+        
+        if(confirm(`Gastar ${custo}H de Game Time para usufruir de: "${nome}"?`)) {
+            saveState.jogador.tempoJogo -= custo;
+            
+            // Logar uso no diário automaticamente
+            const dataStr = new Date().toLocaleString('pt-BR');
+            saveState.diario.unshift({ data: dataStr, texto: `🍺 [TAVERNA] Consumiu o item: "${nome}" gastando ${custo}H de Game Time acumulado.` });
+            
+            salvar(); atualizarInterface(); alert("🍺 Aproveite o seu momento livre com orgulho e sem culpa!");
+        }
+    }
+
+    function removerItemTaverna(id) {
+        if(!saveState.itemsTaverna) return;
+        saveState.itemsTaverna = saveState.itemsTaverna.filter(item => item.id !== id);
+        salvar(); atualizarInterface();
     }
 
     function adicionarJogo() {
@@ -1092,7 +1071,7 @@
         const boxUrgente = document.getElementById('box-missao-urgente');
         if(saveState.missaoUrgenteAtiva) {
             boxUrgente.innerText = `🚨 ALVO IMEDIATO: ${saveState.missaoUrgenteAtiva}`;
-            boxUrgente.style.display = 'block';
+            boxUervice = boxUrgente.style.display = 'block';
             document.getElementById('btn-gerar-urgente').style.display = 'none';
             document.getElementById('btn-concluir-urgente').style.display = 'inline-block';
         } else {
@@ -1133,6 +1112,46 @@
             li.innerHTML = h; listaM.appendChild(li);
         });
 
+        /* RENDER TAVERNA v12.0 */
+        const gridT = document.getElementById('grid-taverna'); gridT.innerHTML = '';
+        const todosItensTaverna = [...itensTavernaPadrao, ...(saveState.itemsTaverna || [])];
+        todosItensTaverna.forEach(item => {
+            const card = document.createElement('div'); card.className = 'taverna-card';
+            let bntDeletar = item.tipo === 'custom' ? `<button onclick="removerItemTaverna('${item.id}')" style="background:none; border:none; color:var(--danger); font-size:0.8rem; cursor:pointer; margin-top:5px; padding:0; display:block;">[Excluir]</button>` : '';
+            card.innerHTML = `
+                <div class="taverna-info">
+                    <h4>${item.nome}</h4>
+                    <p>${item.desc}</p>
+                    ${bntDeletar}
+                </div>
+                <button class="btn-buy-taverna" ${saveState.jogador.tempoJogo >= item.custo ? '' : 'disabled'} onclick="consumirTaverna(${item.custo}, '${item.nome}')">Gastar ${item.custo}H</button>
+            `;
+            gridT.appendChild(card);
+        });
+
+        /* RENDER SKILLS CONFORME v12.0 (SLOTS ATIVOS) */
+        const gridS = document.getElementById('grid-skills'); gridS.innerHTML = '';
+        let countEquipadas = 0;
+        if(saveState.skills) {
+            saveState.skills.forEach(s => {
+                if(s.equipada) countEquipadas++;
+                const div = document.createElement('div'); div.className = `skill-card ${s.equipada ? '' : 'desequipada'}`;
+                
+                div.innerHTML = `
+                    <span class="skill-badge-status ${s.equipada?'eq':'un'}">${s.equipada?'Equipada':'Biblioteca'}</span>
+                    <div class="skill-header"><span>🔮 ${s.nome}</span><span>Lvl ${s.nivel}</span></div>
+                    <div class="skill-bar-container"><div class="skill-bar" style="width:${s.xp}%"></div></div>
+                    <div class="skill-action">
+                        <input type="text" id="resumo-skill-${s.id}" placeholder="Resumo do estudo (15m)...">
+                        <button onclick="treinarSkill(${s.id})">Treinar Perícia</button>
+                    </div>
+                    <button class="btn-toggle-equip" onclick="alternarEquipamentoSkill(${s.id})">${s.equipada?'📥 Desequipar':'⚔️ Equipar Habilidade'}</button>
+                `;
+                gridS.appendChild(div);
+            });
+        }
+        document.getElementById('slot-contador-warning').innerText = `Slots Equipados: ${countEquipadas} / 3 Ativos nesta semana`;
+
         const gridA = document.getElementById('grid-achievements'); gridA.innerHTML = '';
         let countDesbloqueadas = 0;
         bancoConquistas.forEach(c => {
@@ -1165,15 +1184,6 @@
             div.innerHTML = `<div class="dg-header"><span>🤝 Contrato: ${c.fiscal}</span></div><p style="font-size:0.8rem; margin:4px 0;"><b>Missão:</b> ${c.missao}<br><b>Fiança/Castigo:</b> ${c.multa}</p><div style="display:flex; gap:5px;"><button class="btn-main" style="background-color:var(--success); font-size:0.75rem; padding:4px;" onclick="finalizarContrato(${c.id}, true)">Cumprido</button><button class="btn-main" style="background-color:var(--danger); font-size:0.75rem; padding:4px;" onclick="finalizarContrato(${c.id}, false)">Quebrei as Regras</button></div>`;
             gridC.appendChild(div);
         });
-
-        const gridS = document.getElementById('grid-skills'); gridS.innerHTML = '';
-        if(saveState.skills) {
-            saveState.skills.forEach(s => {
-                const div = document.createElement('div'); div.className = 'skill-card';
-                div.innerHTML = `<div class="skill-header"><span>🔮 ${s.nome}</span><span>Lvl ${s.nivel}</span></div><div class="skill-bar-container"><div class="skill-bar" style="width:${s.xp}%"></div></div><div class="skill-action"><input type="text" id="resumo-skill-${s.id}" placeholder="Resumo do estudo (15m)..."><button onclick="treinarSkill(${s.id})">Treinar</button></div>`;
-                gridS.appendChild(div);
-            });
-        }
         
         const gridP = document.getElementById('grid-platinas'); gridP.innerHTML = '';
         saveState.jogosPlatinas.forEach(j => {
